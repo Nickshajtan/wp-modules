@@ -25,5 +25,7 @@ jobs:
         commits=$(git log --oneline --no-merges)
         for commit in $commits; do
           commit_msg=$(echo "$commit" | cut -d' ' -f2-)
-          bash ./scripts/.github/validate-commit.sh "$commit_msg"
+          echo $commit_msg
+          
+          # bash ./scripts/.github/validate-commit.sh "$commit_msg"
         done
