@@ -26,6 +26,7 @@ This step **cannot be skipped** because it validates by *Github Actions*.
    ```bash
    #!/bin/bash
    # Call the validate-commit script with commit message file as argument
+   commit_msg=$(cat "$1")
    bash ./scripts/.github/validate-commit.sh "$1"
 6. Don't forget to make the file executable:
    ```bash
