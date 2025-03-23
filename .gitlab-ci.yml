@@ -1,0 +1,19 @@
+stages:
+  - validate
+
+validate_branch:
+  stage: validate
+  script:
+    - echo "Validating branch name..."
+    - ./scripts/.git-scripts/validate-branch.sh
+
+validate_commit:
+  stage: validate
+  script:
+    - echo "Validating commit messages..."
+    - commits=$(git log --oneline --no-merges)
+    - while IFS= read -r commit; do
+        commit_msg=$(echo "$commit" | cut -d' ' -f2-);
+        echo $commit_msg;
+        bash ./scripts/.git-scripts/validate-commit.sh "$commit_msg";
+      done <<< "$commits"
