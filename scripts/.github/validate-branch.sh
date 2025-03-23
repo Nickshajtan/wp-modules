@@ -9,7 +9,7 @@ else
   branch_name=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
 fi
 
-echo "$branch_name"
+echo "Branch name '$branch_name'"
 
 if [[ "$branch_name" == "init" ]]; then
   exit 0
