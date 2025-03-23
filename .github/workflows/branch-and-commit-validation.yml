@@ -25,7 +25,5 @@ jobs:
         commits=$(git log --oneline --no-merges)
         while IFS= read -r commit; do
           commit_msg=$(echo "$commit" | cut -d' ' -f2-)
-          echo $commit_msg
-          
-          # bash ./scripts/.github/validate-commit.sh "$commit_msg"
+          bash ./scripts/.github/validate-commit.sh "$commit_msg"
         done <<< "$commits"
