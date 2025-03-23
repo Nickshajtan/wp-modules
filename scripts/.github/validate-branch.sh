@@ -6,7 +6,12 @@ if [ -z "$GITHUB_REF" ]; then
   branch_name=$(git symbolic-ref --short HEAD)
 else
   # Running in GitHub Actions, use GITHUB_REF to get the branch name
-  branch_name=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
+    # If it's a pull request, we use GITHUB_HEAD_REF (the source branch of the PR)
+    if [[ "$GITHUB_REF" =~ ^refs/pull/ ]]; then
+      branch_name="$GITHUB_HEAD_REF"
+    else
+      branch_name=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
+    fi
 fi
 
 echo "Branch name '$branch_name'"
