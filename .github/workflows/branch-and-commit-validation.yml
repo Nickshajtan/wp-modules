@@ -22,7 +22,7 @@ jobs:
 
     - name: Validate commit messages
       run: |
-        commits=$(git log --oneline --no-merges origin/${GITHUB_BASE_REF}..HEAD)
+        commits=$(git log --oneline --no-merges)
         for commit in $commits; do
           commit_msg=$(echo "$commit" | cut -d' ' -f2-)
           bash ./scripts/.github/validate-commit.sh "$commit_msg"
