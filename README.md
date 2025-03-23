@@ -1,5 +1,9 @@
 # WordPress Abstractions and Modules for modern development
 
+## Git Conventions
+* Branches must be named `hotfix/**`, `fix/**`, `feature/**`
+* Commit must begin with the word `Fix:`, `Feat:`, `Hotfix:` or `Test:`
+
 ## Setting up Git Hooks
 
 To automatically check branch and commit naming conventions, you need to set up Git hooks on your local machine.
