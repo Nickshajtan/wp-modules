@@ -9,8 +9,10 @@ else
   branch_name=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
 fi
 
+echo "$branch_name"
+
 if [[ "$branch_name" == "init" ]]; then
-  exit 0;
+  exit 0
 fi;
 
 if [[ ! "$branch_name" =~ ^(init|feature|fix|hotfix)/.* ]]; then
