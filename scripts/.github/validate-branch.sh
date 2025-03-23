@@ -9,10 +9,11 @@ else
   branch_name=$(echo "$GITHUB_REF" | sed 's/refs\/heads\///')
 fi
 
-# Check if the branch name is valid
-if [[ "$branch_name" == "init" || "$branch_name" =~ ^(feature|fix|hotfix)/.* ]]; then
-  exit 0
-else
+if [[ "$branch_name" == "init" ]]; then
+  exit 0;
+fi;
+
+if [[ ! "$branch_name" =~ ^(init|feature|fix|hotfix)/.* ]]; then
   echo "Branch name must start with 'init/', 'feature/', 'fix/', or 'hotfix/'"
   exit 1
 fi
