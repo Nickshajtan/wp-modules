@@ -16,23 +16,17 @@ This step **cannot be skipped** because it validates by *Github Actions*.
    cd .git/hooks
 3. Create or edit the `pre-push` hook for branch name validation by copying the following code:
    ```bash
-   #!/bin/sh
-   branch_name=$(git symbolic-ref --short HEAD)
-   if [[ ! "$branch_name" =~ ^(init|feature|fix|hotfix)/.* ]]; then
-     echo "Branch name must start with 'init/', 'feature/', 'fix/', or 'hotfix/'"
-     exit 1
-   fi
+   #!/bin/bash
+   # Call the validate-branch script
+   bash ./scripts/.github/validate-branch.sh
 4. Don't forget to make the file executable:
    ```bash
    chmod +x pre-push
 5. Create or edit the `commit-msg` hook for commit message validation by using this script:
    ```bash
-   #!/bin/sh
-   commit_msg=$(cat "$1")
-   if [[ ! "$commit_msg" =~ ^(Feat|Fix|Hotfix): ]]; then
-     echo "Commit message must start with 'feat:', 'fix:', or 'hotfix:'"
-     exit 1
-   fi
+   #!/bin/bash
+   # Call the validate-commit script with commit message file as argument
+   bash ./scripts/.github/validate-commit.sh "$1"
 6. Don't forget to make the file executable:
    ```bash
    chmod +x commit-msg
