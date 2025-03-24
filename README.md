@@ -1,5 +1,8 @@
 # WordPress Abstractions and Modules for modern development
 
+## CI/CD Workflows
+This repository is designed to have Github and Gitlab origins in parallel.
+
 ## Git Conventions
 * Branches must be named `hotfix/**`, `fix/**`, `feature/**`
 * Commit must begin with the word `Fix:`, `Feat:`, `Hotfix:` or `Test:`
@@ -7,7 +10,7 @@
 ## Setting up Git Hooks
 
 To automatically check branch and commit naming conventions, you need to set up Git hooks on your local machine.
-This step **cannot be skipped** because it validates by *Github Actions*.
+This step **cannot be skipped** because it validates by *Github Actions* / *Gitlab CI*.
 
 ### Steps:
 
