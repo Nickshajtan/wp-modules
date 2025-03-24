@@ -5,6 +5,9 @@ namespace HCC\Plugin\Core\Hook;
 use HCC\Plugin\Core\Hook\Interfaces\CollectionInterface;
 use HCC\Plugin\Core\Hook\Interfaces\HandlerInterface;
 
+/**
+ * Facade processor for HookCollection
+ */
 class Handler implements HandlerInterface
 {
     protected CollectionInterface $collection;

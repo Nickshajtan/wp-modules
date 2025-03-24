@@ -2,6 +2,9 @@
 
 namespace HCC\Plugin\Core\Hook;
 
+/**
+ * Class that describes a data structure
+ */
 class Hook
 {
     public string $hookName;

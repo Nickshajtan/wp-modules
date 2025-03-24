@@ -4,15 +4,18 @@ namespace HCC\Plugin\Core\Hook;
 
 use HCC\Plugin\Core\Hook\Interfaces\CollectionInterface;
 
+/**
+ * Class that stores module hooks in local state and accesses the global callback only when necessary
+ */
 class HookCollection implements CollectionInterface
 {
     private array $hooks = array();
 
-    private $handler;
+    private CallbacksStore $handlers;
 
-    public function __construct(callable $handler)
+    public function __construct(CallbacksStore $handlers)
     {
-        $this->handler = $handler;
+        $this->handlers = $handlers;
     }
 
     public function getAllHooks(string $hookName = '', ?int $priority = null): array

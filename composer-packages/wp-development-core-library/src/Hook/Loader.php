@@ -18,16 +18,29 @@ class Loader
      */
     private array $handlers;
 
-    public function __construct(array $handlers)
+    public function __construct(array $callbacks = array())
     {
-        $handlers = array_filter($handlers, fn($handler) => $handler instanceof HandlerInterface::class);
+        $callbacks = array_filter($callbacks, fn($handler) => $handler instanceof CallbacksStore::class);
+        array_walk($callbacks, function (&$value) {
+            $value = $this->buildHandler($value);
+        });
+
         $this->handlers = array_merge(
-            $handlers,
+            $callbacks,
             array(
-                CollectionInterface::FILTER => new Handler(new HookCollection('add_filter')),
-                CollectionInterface::ACTION => new Handler(new HookCollection('add_action')),
+                CollectionInterface::FILTER => $this->buildHandler(
+                    new CallbacksStore(add: 'add_filter', remove: 'remove_filter', execute: 'apply_filters')
+                ),
+                CollectionInterface::ACTION => $this->buildHandler(
+                    new CallbacksStore(add: 'add_action', remove: 'remove_action', execute: 'do_action')
+                ),
             )
         );
+    }
+
+    protected function buildHandler(CallbacksStore $callbacks): Handler
+    {
+        return new Handler(new HookCollection($callbacks));
     }
 
     protected function checkIfHandlerExist(string $type): void
@@ -79,5 +92,17 @@ class Loader
     public function run(): void
     {
 
+    }
+
+    /**
+     * @param array $callbacks
+     * @param $myClass
+     * @return true
+     */
+    public function getArr(array $callbacks, $myClass): bool
+    {
+        return array_walk($callbacks, function (&$value, $key) use ($myClass) {
+            $value = $myClass->modify($value); // Застосовуємо метод класу до кожного елемента
+        });
     }
 }
