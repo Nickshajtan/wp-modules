@@ -1,6 +1,8 @@
 <?php
 
 namespace HCC\Plugin\Core\Hook\Interfaces;
+
+use HCC\Plugin\Core\Hook\Hook;
 interface CollectionInterface
 {
     public const ACTION = 'action';
@@ -18,7 +20,7 @@ interface CollectionInterface
     public function removeHook(string $hookName, string $id): void;
     public function executeHook(string $hookName, string $id): mixed;
 
-    public function callHook(object $hook): mixed;
+    public function callHook(Hook $hook): mixed;
 
     public function getAllHooks(string $hookName = '', ?int $priority = null): array;
 }

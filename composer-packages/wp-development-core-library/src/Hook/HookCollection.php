@@ -29,14 +29,14 @@ class HookCollection implements CollectionInterface
         null|string|int $id = null
     ): void
     {
-        $this->hooks[] = (object)[
-            'hook' => $hookName,
-            'callback' => fn(...$args) => call_user_func_array($callback, array_slice($args, 0, $acceptedArgs)),
-            'priority' => $priority,
-            'accepted_args' => $acceptedArgs,
-            'component' => $object,
-            'id' => '_' . $hookName . '_' . ($id ?? uniqid()),
-        ];
+        $this->hooks[] = new Hook(
+            hookName: $hookName,
+            callback: fn(...$args) => call_user_func_array($callback, array_slice($args, 0, $acceptedArgs)),
+            priority: $priority,
+            acceptedArgs: $acceptedArgs,
+            component: $object,
+            id: $id
+        );
     }
 
     public function removeHook(string $hookName, string $id = '', ?int $priority = null): void
@@ -57,20 +57,20 @@ class HookCollection implements CollectionInterface
         return $this->callHook($hook);
     }
 
-    public function callHook(object $hook): mixed
+    public function callHook(Hook $hook): mixed
     {
         if (!is_callable($this->handler)) {
-            $this->handleException("Handler for hook {$hook->hook} is not callable.");
+            $this->handleException("Handler for hook {$hook->hookName} is not callable.");
         }
 
         if (!is_callable($hook->callback)) {
-            $this->handleException("Callback for hook {$hook->hook} is not callable.");
+            $this->handleException("Callback for hook {$hook->hookName} is not callable.");
         }
 
         return call_user_func_array($this->handler, array_values((array) $hook));
     }
 
-    protected function findHook(string $hookName = '', string $id = '', ?int $priority = null): ?object
+    protected function findHook(string $hookName = '', string $id = '', ?int $priority = null): ?Hook
     {
         if (empty($hookName) && empty($id)) {
             return null;
@@ -90,8 +90,8 @@ class HookCollection implements CollectionInterface
     {
         $filteredHooks = $this->hooks;
         if (!empty($hookName)) {
-            $filteredHooks = array_filter($filteredHooks, function (object $hook) use ($hookName, $priority) {
-                return ($hook->hook ?? '') === $hookName && (is_null($priority) || ($hook->priority ?? 0) === $priority);
+            $filteredHooks = array_filter($filteredHooks, function (Hook $hook) use ($hookName, $priority) {
+                return ($hook->hookName ?? '') === $hookName && (is_null($priority) || ($hook->priority ?? 0) === $priority);
             });
         }
 
