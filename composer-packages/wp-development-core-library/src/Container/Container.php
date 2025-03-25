@@ -3,16 +3,23 @@
 namespace HCC\Plugin\Core\Container;
 
 use HCC\Plugin\Core\Container\Interfaces\ContainerInterface;
-
+use HCC\Plugin\Core\Cache\Interfaces\CacheInterface;
 class Container implements ContainerInterface
 {
     private array $services = array();
     private array $instances = array();
     private array $singletons = array();
 
+    private ?CacheInterface $cache;
+
+    public function __construct(?CacheInterface $cache = null)
+    {
+        $this->cache = $cache;
+    }
+
     public function has(string $name): bool
     {
-        return ((bool) ($this->services[$name] ?? false));
+        return isset($this->services[$name]) || isset($this->instances[$name]) || ($this->isCacheEnabled() && $this->cache->has($name));
     }
 
     public function set(string $name, callable $factory, bool $singleton = false): void
@@ -25,6 +32,10 @@ class Container implements ContainerInterface
 
     public function get(string $name): mixed
     {
+        if ($this->isCacheEnabled() && $cached = $this->cache->get($name)) {
+            return $cached;
+        }
+
         try {
             if (isset($this->instances[$name])) {
                 return $this->instances[$name];
@@ -32,6 +43,11 @@ class Container implements ContainerInterface
 
             if (!isset($this->services[$name]) && class_exists($name)) {
                 $this->instances[$name] = $this->resolve($name);
+
+                if ($this->isCacheEnabled()) {
+                    $this->cache->set($name, $this->instances[$name]);
+                }
+
                 return $this->instances[$name];
             }
 
@@ -42,11 +58,55 @@ class Container implements ContainerInterface
             $instance = call_user_func($this->services[$name], $this);
             if (isset($this->singletons[$name])) {
                 $this->instances[$name] = $instance;
+
+                if ($this->isCacheEnabled()) {
+                    $this->cache->set($name, $instance);
+                }
             }
 
             return $instance;
         } catch (\RuntimeException $exception) {
             $this->handleException($exception->getMessage());
+        }
+    }
+
+    public function clear(): void
+    {
+        $this->instances = [];
+        $this->services = [];
+        $this->singletons = [];
+
+        if ($this->isCacheEnabled()) {
+            $this->cache->clear();
+        }
+    }
+
+    public function forget(string $name): void
+    {
+        unset($this->instances[$name]);
+
+        if ($this->isCacheEnabled()) {
+            $this->cache->delete($name);
+        }
+    }
+
+    public function refresh(string $name): void
+    {
+        unset($this->instances[$name]);
+
+        if ($this->isCacheEnabled()) {
+            $this->cache->delete($name);
+        }
+
+        if (isset($this->services[$name]) || class_exists($name)) {
+            $this->instances[$name] = $this->get($name);
+        }
+    }
+
+    public function refreshAll(): void
+    {
+        foreach (array_keys($this->services) as $name) {
+            $this->refresh($name);
         }
     }
 
@@ -82,6 +142,11 @@ class Container implements ContainerInterface
         } catch (\ReflectionException $exception) {
             $this->handleException($exception->getMessage());
         }
+    }
+
+    protected function isCacheEnabled(): bool
+    {
+        return !is_null($this->cache);
     }
 
     protected function handleException(string $message): void
