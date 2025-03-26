@@ -1,9 +1,9 @@
 <?php
 
-namespace HCC\Plugin\Core\Hook;
+namespace HCC\Core\Hook;
 
-use HCC\Plugin\Core\Hook\Interfaces\HandlerInterface;
-use HCC\Plugin\Core\Hook\Interfaces\CollectionInterface;
+use HCC\Core\Hook\Interfaces\HandlerInterface;
+use HCC\Core\Hook\Interfaces\CollectionInterface;
 
 /**
  * Wrapper class for isolate native functionality

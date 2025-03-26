@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\Plugin\Core\Hook\Interfaces;
+namespace HCC\Core\Hook\Interfaces;
 interface HandlerInterface
 {
     public function add(...$args): void;

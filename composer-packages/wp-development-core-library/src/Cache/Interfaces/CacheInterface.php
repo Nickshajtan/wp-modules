@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\Plugin\Core\Cache\Interfaces;
+namespace HCC\Core\Cache\Interfaces;
 
 interface CacheInterface
 {

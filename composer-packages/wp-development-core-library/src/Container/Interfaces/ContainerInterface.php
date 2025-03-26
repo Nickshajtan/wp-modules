@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\Plugin\Core\Container\Interfaces;
+namespace HCC\Core\Container\Interfaces;
 
 interface ContainerInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace HCC\Plugin\Core\Hook;
+namespace HCC\Core\Hook;
 
-use HCC\Plugin\Core\Hook\Interfaces\CollectionInterface;
+use HCC\Core\Hook\Interfaces\CollectionInterface;
 
 /**
  * Class that stores module hooks in local state and accesses the global callback only when necessary

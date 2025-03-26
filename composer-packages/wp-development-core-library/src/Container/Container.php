@@ -1,9 +1,9 @@
 <?php
 
-namespace HCC\Plugin\Core\Container;
+namespace HCC\Core\Container;
 
-use HCC\Plugin\Core\Container\Interfaces\ContainerInterface;
-use HCC\Plugin\Core\Cache\Interfaces\CacheInterface;
+use HCC\Core\Container\Interfaces\ContainerInterface;
+use HCC\Core\Cache\Interfaces\CacheInterface;
 class Container implements ContainerInterface
 {
     private array $services = array();
