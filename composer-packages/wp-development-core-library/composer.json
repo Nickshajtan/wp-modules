@@ -1,6 +1,7 @@
 {
   "name": "hcc/wp-development-core-library",
   "description": "WordPress development framework with reusable components",
+  "version": "1.0.0",
   "type": "library",
   "require": {
     "php": ">=8.2",
