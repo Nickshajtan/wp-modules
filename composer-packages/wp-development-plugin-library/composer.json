@@ -15,5 +15,8 @@
   },
   "extra": {
     "installer-name": "wp-development-plugin-library"
+  },
+  "config": {
+    "vendor-dir": "lib"
   }
 }

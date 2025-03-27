@@ -32,9 +32,11 @@ class HookCollection implements CollectionInterface
         null|string|int $id = null
     ): void
     {
-        $this->hooks[] = new Hook(
+        $id = $id ?
+            $this->encodeId($id) : $this->generateHookId(hookName: $hookName, callback: $callback, priority: $priority);
+        $this->hooks[$id] = new Hook(
             hookName: $hookName,
-            callback: fn(...$args) => call_user_func_array($callback, array_slice($args, 0, $acceptedArgs)),
+            callback: fn(...$args) => $callback(...array_slice($args, 0, $acceptedArgs)),
             priority: $priority,
             acceptedArgs: $acceptedArgs,
             component: $object,
@@ -42,67 +44,111 @@ class HookCollection implements CollectionInterface
         );
     }
 
-    public function removeHook(string $hookName, string $id = '', ?int $priority = null): void
+    public function removeHook(string $hookName, string $id = '', ?int $priority = null): bool
     {
-        $hook = $this->findHook($hookName, $id, $priority);
+        $hook = $this->findHook($hookName);
         if (!is_null($hook)) {
             $this->hooks = array_values(array_diff($this->hooks, [$hook]));
+            return true;
+        }
+
+        return false;
+    }
+
+    public function registerHook(string $hookName, string $id = '', ?int $priority = null): void
+    {
+        $hook = $this->findHook($id);
+        if (!is_null($hook)) {
+            $this->callHook($this->handlers->add, $hook->toArray());
         }
     }
 
-    public function executeHook(string $hookName, string $id = '', ?int $priority = null): mixed
+    public function deregisterHook(string $hookName, string $id = '', ?int $priority = null): void
     {
-        $hook = $this->findHook($hookName, $id, $priority);
-        if (is_null($hook)) {
-            $this->handleException("Hook {$hookName}: {$id} not found.");
+        if (!$this->removeHook($hookName, $id, $priority)) {
+            $this->callHook($this->handlers->remove, [$hookName, $priority]);
         }
-
-        return $this->callHook($hook);
     }
 
-    public function callHook(Hook $hook): mixed
+    public function dispatchHook(string $hookName, string $id = '', ?int $priority = null, ...$args): mixed
     {
-        if (!is_callable($this->handler)) {
-            $this->handleException("Handler for hook {$hook->hookName} is not callable.");
-        }
-
-        if (!is_callable($hook->callback)) {
-            $this->handleException("Callback for hook {$hook->hookName} is not callable.");
-        }
-
-        return call_user_func_array($this->handler, array_values((array) $hook));
+        $hook = $this->findHook($id);
+        return $this->callHook($this->handlers->execute, [$hook ? $hook->hookName : $hookName, ...$args]);
     }
 
-    protected function findHook(string $hookName = '', string $id = '', ?int $priority = null): ?Hook
+    protected function findHook(string $id): ?Hook
     {
-        if (empty($hookName) && empty($id)) {
-            return null;
-        }
-
-        if (!empty($id)) {
-            $key = array_search($id, array_column($this->hooks, 'id'), true);
-            if ($key) {
-                return $this->hooks[$key];
-            }
-        }
-
-        return current($this->filterHooks($hookName, $priority));
+        return $this->hooks[$id] ?? null;
     }
 
     protected function filterHooks(string $hookName, ?int $priority = null): array
     {
         $filteredHooks = $this->hooks;
         if (!empty($hookName)) {
-            $filteredHooks = array_filter($filteredHooks, function (Hook $hook) use ($hookName, $priority) {
-                return ($hook->hookName ?? '') === $hookName && (is_null($priority) || ($hook->priority ?? 0) === $priority);
-            });
+            $filteredHooks = array_filter($filteredHooks, fn(Hook $hook) => $hook->hookName === $hookName);
         }
 
-        if (is_null($priority)) {
+        if (!is_null($priority)) {
+            $filteredHooks = array_filter($filteredHooks, fn(Hook $hook) => $hook->priority === $priority);
+        }
+
+        if (is_null($priority) && count($filteredHooks) > 1) {
             usort($filteredHooks, fn($a, $b) => ($a->priority ?? 0) <=> ($b->priority ?? 0));
         }
 
-        return $filteredHooks;
+        return array_values($filteredHooks);
+    }
+
+    protected function callHook(callable $handler, array $args): mixed
+    {
+        try {
+            return call_user_func_array($handler, $args);
+        } catch (\Exception $exception) {
+            $this->handleException($exception->getMessage());
+        }
+    }
+
+    protected function generateHookId(string $hookName, array|object|string $callback, ?int $priority = null): string
+    {
+        try {
+            $getStableClosureHash = function (\Closure $closure): string {
+                $reflection = new \ReflectionFunction($closure);
+                $vars = $reflection->getStaticVariables();
+                $code = file($reflection->getFileName());
+                $codeSnippet = trim(implode("\n", array_slice($code, $reflection->getStartLine() - 1, 5)));
+
+                return $this->encodeId(
+                    serialize([
+                        'code' => $codeSnippet,
+                        'vars' => $vars,
+                    ])
+                );
+            };
+            $callbackId = match (true) {
+                is_array($callback) && is_object($callback[0]) => get_class($callback[0]) . '::' . $callback[1],
+                is_array($callback) => implode(
+                    '|',
+                    array_map(fn($item) => str_replace('::', '%double_colon%', (string)$item), $callback)
+                ),
+                is_string($callback) => $callback,
+                $callback instanceof \Closure => $getStableClosureHash($callback),
+                is_object($callback) => get_class($callback) . '@' . $this->encodeId(serialize($callback)),
+                default => spl_object_hash($callback),
+            };
+            $toId = $hookName . '|' . $callbackId;
+            if (!is_null($priority)) {
+                $toId .= '|' . $priority;
+            }
+
+            return $this->encodeId($toId);
+        } catch (\Exception $exception) {
+            $this->handleException($exception->getMessage());
+        }
+    }
+
+    protected function encodeId(string $id): string
+    {
+        return hash('sha256', $id);
     }
 
     protected function handleException(string $message)

@@ -29,4 +29,14 @@ class Hook
         $this->component = $component;
         $this->id = $id ?? '_' . $hookName . '_' . uniqid();
     }
+
+    public function toArray(): array
+    {
+        return [
+            $this->hookName,
+            $this->callback,
+            $this->priority,
+            $this->acceptedArgs
+        ];
+    }
 }

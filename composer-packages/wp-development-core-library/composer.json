@@ -14,5 +14,8 @@
   },
   "extra": {
     "installer-name": "wp-development-core-library"
+  },
+  "config": {
+    "vendor-dir": "lib"
   }
 }
