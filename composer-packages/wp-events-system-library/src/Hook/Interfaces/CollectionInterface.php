@@ -1,8 +1,8 @@
 <?php
 
-namespace HCC\Core\Hook\Interfaces;
+namespace HCC\Events\Hook\Interfaces;
 
-use HCC\Core\Hook\Hook;
+use HCC\Events\Hook\Hook;
 interface CollectionInterface
 {
     public const ACTION = 'action';

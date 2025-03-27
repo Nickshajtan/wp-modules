@@ -1,0 +1,21 @@
+{
+  "name": "hcc/wp-event-system-library",
+  "description": "Event system to combine WordPress actions with external events support",
+  "version": "1.0.0",
+  "type": "library",
+  "require": {
+    "php": ">=8.2",
+    "composer/installers": "^1.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "HCC\\Events": "src/"
+    }
+  },
+  "extra": {
+    "installer-name": "wp-event-system-library"
+  },
+  "config": {
+    "vendor-dir": "lib"
+  }
+}

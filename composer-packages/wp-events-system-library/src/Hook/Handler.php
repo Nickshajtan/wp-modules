@@ -1,9 +1,9 @@
 <?php
 
-namespace HCC\Core\Hook;
+namespace HCC\Events\Hook;
 
-use HCC\Core\Hook\Interfaces\CollectionInterface;
-use HCC\Core\Hook\Interfaces\HandlerInterface;
+use HCC\Events\Hook\Interfaces\CollectionInterface;
+use HCC\Events\Hook\Interfaces\HandlerInterface;
 
 /**
  * Facade processor for HookCollection

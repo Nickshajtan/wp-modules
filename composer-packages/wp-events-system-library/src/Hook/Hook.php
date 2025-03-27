@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\Core\Hook;
+namespace HCC\Events\Hook;
 
 /**
  * Class that describes a data structure
