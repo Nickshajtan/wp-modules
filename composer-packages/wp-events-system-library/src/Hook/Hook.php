@@ -30,6 +30,11 @@ class Hook
         $this->id = $id ?? '_' . $hookName . '_' . uniqid();
     }
 
+    public function dispatch(...$args): mixed
+    {
+        return call_user_func($this->callback, ...$args);
+    }
+
     public function toArray(): array
     {
         return [

@@ -9,7 +9,8 @@ use HCC\Events\Hook\Interfaces\CollectionInterface;
  */
 class HookCollection implements CollectionInterface
 {
-    private array $hooks = array();
+    private array $hooksById = [];
+    private array $hookIdsByName = [];
 
     private CallbacksStore $handlers;
 
@@ -18,15 +19,15 @@ class HookCollection implements CollectionInterface
         $this->handlers = $handlers;
     }
 
-    public function getAllHooks(string $hookName = '', ?int $priority = null): array
+    public function getAllHooks(string $hookName = '', int $priority = self::DEFAULT_PRIORITY): array
     {
-        return $this->filterHooks($hookName, $priority);
+        return empty($hookName) ? $this->hooksById : $this->filterHooks($hookName, $priority);
     }
 
     public function addHook(
         string          $hookName,
         callable        $callback,
-        int             $priority = 10,
+        int             $priority = self::DEFAULT_PRIORITY,
         int             $acceptedArgs = 1,
         ?object         $object = null,
         null|string|int $id = null
@@ -34,7 +35,7 @@ class HookCollection implements CollectionInterface
     {
         $id = $id ?
             $this->encodeId($id) : $this->generateHookId(hookName: $hookName, callback: $callback, priority: $priority);
-        $this->hooks[$id] = new Hook(
+        $this->hooksById[$id] = new Hook(
             hookName: $hookName,
             callback: fn(...$args) => $callback(...array_slice($args, 0, $acceptedArgs)),
             priority: $priority,
@@ -42,13 +43,29 @@ class HookCollection implements CollectionInterface
             component: $object,
             id: $id
         );
+        $this->hookIdsByName[$hookName][$priority][$id] = $id;
     }
 
-    public function removeHook(string $hookName, string $id = '', ?int $priority = null): bool
+    public function removeHook(
+        string    $hookName,
+        string    $id = '',
+        int       $priority = self::DEFAULT_PRIORITY,
+        ?callable $callback = null
+    ): bool
     {
-        $hook = $this->findHook($hookName);
-        if (!is_null($hook)) {
-            $this->hooks = array_values(array_diff($this->hooks, [$hook]));
+        if (empty($id)) {
+            $id = 1 !== count($this->hookIdsByName[$hookName][$priority] ?? []) ?
+                $this->generateHookId(hookName: $hookName, callback: $callback, priority: $priority) :
+                (string) array_key_first($this->hookIdsByName[$hookName][$priority] ?? []);
+        }
+
+        if (!empty($this->findHookById($id))) {
+            unset($this->hooksById[$id]);
+
+            if (!empty($this->hookIdsByName[$hookName][$priority][$id])) {
+                unset($this->hookIdsByName[$hookName][$priority][$id]);
+            }
+
             return true;
         }
 
@@ -57,7 +74,7 @@ class HookCollection implements CollectionInterface
 
     public function registerHook(string $hookName, string $id = '', ?int $priority = null): void
     {
-        $hook = $this->findHook($id);
+        $hook = $this->findHookById($id);
         if (!is_null($hook)) {
             $this->callHook($this->handlers->add, $hook->toArray());
         }
@@ -70,29 +87,31 @@ class HookCollection implements CollectionInterface
         }
     }
 
-    public function dispatchHook(string $hookName, string $id = '', ?int $priority = null, ...$args): mixed
+    public function dispatchHook(string $hookName, string $id = '', ...$args): mixed
     {
-        $hook = $this->findHook($id);
-        return $this->callHook($this->handlers->execute, [$hook ? $hook->hookName : $hookName, ...$args]);
-    }
-
-    protected function findHook(string $id): ?Hook
-    {
-        return $this->hooks[$id] ?? null;
-    }
-
-    protected function filterHooks(string $hookName, ?int $priority = null): array
-    {
-        $filteredHooks = $this->hooks;
-        if (!empty($hookName)) {
-            $filteredHooks = array_filter($filteredHooks, fn(Hook $hook) => $hook->hookName === $hookName);
+        $hook = $this->findHookById($id);
+        if (!is_null($hook)) {
+            return $hook->dispatch(...$args);
         }
 
-        if (!is_null($priority)) {
-            $filteredHooks = array_filter($filteredHooks, fn(Hook $hook) => $hook->priority === $priority);
+        return $this->callHook($this->handlers->execute, [$hookName, ...$args]);
+    }
+
+    protected function findHookById(string $id): ?Hook
+    {
+        return $this->hooksById[$id] ?? null;
+    }
+    protected function filterHooks(string $hookName, int $priority = self::DEFAULT_PRIORITY): array
+    {
+        $filteredHooks = array_filter(array_map(
+            fn(string $id) => $this->findHookById($id),
+            $this->hookIdsByName[$hookName][$priority] ?? []
+        ));
+        if (count($filteredHooks) < 1) {
+            return [];
         }
 
-        if (is_null($priority) && count($filteredHooks) > 1) {
+        if (count($filteredHooks) > 1) {
             usort($filteredHooks, fn($a, $b) => ($a->priority ?? 0) <=> ($b->priority ?? 0));
         }
 
@@ -110,19 +129,25 @@ class HookCollection implements CollectionInterface
 
     protected function generateHookId(string $hookName, array|object|string $callback, ?int $priority = null): string
     {
+        static $closureCache = [];
+
         try {
-            $getStableClosureHash = function (\Closure $closure): string {
+            $getStableClosureHash = function (\Closure $closure) use (&$closureCache): string {
+                $hash = spl_object_hash($closure);
+                if (isset($closureCache[$hash])) {
+                    return $closureCache[$hash];
+                }
+
                 $reflection = new \ReflectionFunction($closure);
                 $vars = $reflection->getStaticVariables();
-                $code = file($reflection->getFileName());
+                $fileName = $reflection->getFileName();
+                $code = $fileName ? file($fileName) : [];
                 $codeSnippet = trim(implode("\n", array_slice($code, $reflection->getStartLine() - 1, 5)));
 
-                return $this->encodeId(
-                    serialize([
-                        'code' => $codeSnippet,
-                        'vars' => $vars,
-                    ])
-                );
+                $id = $this->encodeId(serialize(['code' => $codeSnippet, 'vars' => $vars]));
+                $closureCache[$hash] = $id;
+
+                return $id;
             };
             $callbackId = match (true) {
                 is_array($callback) && is_object($callback[0]) => get_class($callback[0]) . '::' . $callback[1],
