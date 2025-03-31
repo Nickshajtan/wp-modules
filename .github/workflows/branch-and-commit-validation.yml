@@ -9,6 +9,10 @@ on:
       - 'prelaunch'
       - 'production'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.before }}
+  cancel-in-progress: false
+
 jobs:
   validate:
     runs-on: ubuntu-latest
