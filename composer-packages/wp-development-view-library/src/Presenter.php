@@ -11,15 +11,13 @@ use HCC\View\Interfaces\TemplateLocatorInterface;
 class Presenter
 {
     protected array $data = [];
-    protected string $cachePath;
     private TemplateResolverInterface $resolver;
     private TemplateLocatorInterface $locator;
 
-    public function __construct(TemplateLocator $locator, TemplateResolverInterface $resolver, string $cachePath)
+    public function __construct(TemplateLocator $locator, TemplateResolverInterface $resolver)
     {
         $this->resolver = $resolver;
         $this->locator = $locator;
-        $this->cachePath = $cachePath;
     }
 
     public function with(string $key, mixed $value): self
@@ -32,7 +30,7 @@ class Presenter
     {
         $path = $this->locator->locate($template) ?? $defaultPath;
         $view = new View($path, $this->data);
-        $view->setEngine($this->resolver->resolve(template: $template, path: $path, cachePath: $this->cachePath));
+        $view->setEngine($this->resolver->resolve(template: $template, path: $path));
         $this->clean();
 
         return $view;
