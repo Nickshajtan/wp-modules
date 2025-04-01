@@ -3,16 +3,15 @@
 namespace HCC\View\Engine;
 
 use HCC\View\Interfaces\TemplateEngineInterface;
+use HCC\View\Interfaces\TemplateCacheInterface;
 
 class PhpEngine implements TemplateEngineInterface
 {
-    protected string $cachePath;
-    protected int $cacheLifetime;
+    protected TemplateCacheInterface $cache;
 
-    public function __construct(string $cachePath, int $cacheLifetime = 3600)
+    public function __construct(TemplateCacheInterface $cache)
     {
-        $this->cachePath = $cachePath;
-        $this->cacheLifetime = $cacheLifetime;
+        $this->cache = $cache;
     }
 
     public function render(string $path, array $data): string
@@ -21,9 +20,10 @@ class PhpEngine implements TemplateEngineInterface
             return "<!-- Template {$path} not found -->";
         }
 
-        $cacheFile = $this->getCacheFileName($path);
-        if ($this->checkCachedFile($cacheFile)) {
-            return $this->getCachedContent($cacheFile);
+        $basename = basename($path);
+        $cacheFile = $this->cache->get($basename);
+        if ($cacheFile) {
+            return $cacheFile;
         }
 
         ob_start();
@@ -31,28 +31,8 @@ class PhpEngine implements TemplateEngineInterface
         include $path;
 
         $content = ob_get_clean();
-        $this->setCachedContent($cacheFile, $content);
+        $this->cache->set($basename, $content);
 
         return $content;
-    }
-
-    protected function setCachedContent(string $cacheFile, string $content): void
-    {
-        file_put_contents($cacheFile, $content);
-    }
-
-    protected function getCachedContent(string $cacheFile): string
-    {
-        return file_get_contents($cacheFile);
-    }
-
-    protected function checkCachedFile(string $cacheFile): bool
-    {
-        return file_exists($cacheFile) && (filemtime($cacheFile) + $this->cacheLifetime) > time();
-    }
-
-    protected function getCacheFileName(string $path): string
-    {
-        return $this->cachePath . DIRECTORY_SEPARATOR . md5($path) . '.cache';
     }
 }

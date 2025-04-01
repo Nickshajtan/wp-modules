@@ -5,12 +5,15 @@ namespace HCC\View;
 use HCC\View\Interfaces\TemplateCacheInterface;
 class TemplateFileCache implements TemplateCacheInterface
 {
-    public string $cacheDir;
+    protected string $cacheDir;
+
+    protected int $ttl;
 
     protected const CACHE_EXTENSION = 'cache';
 
-    public function __construct(string $cacheDir) {
+    public function __construct(string $cacheDir, int $ttl = 3600) {
         $this->cacheDir = str_ends_with($cacheDir, DIRECTORY_SEPARATOR) ? $cacheDir : $cacheDir . DIRECTORY_SEPARATOR;
+        $this->ttl = $ttl;
         $this->createDir($cacheDir);
     }
 
@@ -33,6 +36,11 @@ class TemplateFileCache implements TemplateCacheInterface
         return $subDir . $hash . $cacheExt;
     }
 
+    public function getCacheDirectory(): string
+    {
+        return $this->cacheDir;
+    }
+
     public function set(string $filename, string $content): void
     {
         $filePath = $this->getFilePath($filename);
@@ -44,6 +52,7 @@ class TemplateFileCache implements TemplateCacheInterface
             fflush($fp);
             flock($fp, LOCK_UN);
             fclose($fp);
+            touch($filePath);
         }
     }
 
@@ -51,6 +60,11 @@ class TemplateFileCache implements TemplateCacheInterface
     {
         $filePath = $this->getFilePath($filename);
         if (!file_exists($filePath)) {
+            return null;
+        }
+
+        if (time() - filemtime($filePath) > $this->ttl) {
+            $this->delete($filename);
             return null;
         }
 
@@ -87,6 +101,20 @@ class TemplateFileCache implements TemplateCacheInterface
                 unlink($file->getPathname());
             } elseif ($file->isDir()) {
                 rmdir($file->getPathname());
+            }
+        }
+    }
+
+    public function purgeExpired(): void
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($this->cacheDir, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && time() - $file->getMTime() > $this->ttl) {
+                unlink($file->getPathname());
             }
         }
     }

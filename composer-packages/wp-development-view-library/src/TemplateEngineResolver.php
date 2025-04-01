@@ -8,6 +8,7 @@ use HCC\View\Engine\PhpEngine;
 use HCC\View\Engine\TwigEngine;
 use HCC\View\Interfaces\TemplateEngineInterface;
 use HCC\View\Interfaces\TemplateResolverInterface;
+use HCC\View\Interfaces\TemplateCacheInterface;
 
 /**
  * With TemplateEngineInterface classes this resolver implements Strategy pattern
@@ -15,12 +16,12 @@ use HCC\View\Interfaces\TemplateResolverInterface;
 class TemplateEngineResolver implements TemplateResolverInterface
 {
     private StorageFacade $storage;
-    private string $cachePath;
+    private TemplateCacheInterface $cache;
 
-    public function __construct(string $group, string $cachePath)
+    public function __construct(string $group, TemplateCacheInterface $cache)
     {
         $this->storage = StorageFacade::for($group);
-        $this->cachePath = rtrim($cachePath, DIRECTORY_SEPARATOR);
+        $this->cache = $cache;
     }
 
     public function resolve(string $template, string $path): TemplateEngineInterface
@@ -32,7 +33,7 @@ class TemplateEngineResolver implements TemplateResolverInterface
 
             return $this->storage->remember(
                 'engine.twig',
-                fn() => new TwigEngine(basename($path), $this->cachePath)
+                fn() => new TwigEngine(basename($path), $this->cache)
             );
         }
 
@@ -51,10 +52,10 @@ class TemplateEngineResolver implements TemplateResolverInterface
 
             return $this->storage->remember(
                 'engine.blade',
-                fn() => new BladeEngine(basename($path), $this->cachePath)
+                fn() => new BladeEngine(basename($path), $this->cache)
             );
         }
 
-        return $this->storage->remember('engine.php', fn() => new PhpEngine($this->cachePath));
+        return $this->storage->remember('engine.php', fn() => new PhpEngine($this->cache));
     }
 }

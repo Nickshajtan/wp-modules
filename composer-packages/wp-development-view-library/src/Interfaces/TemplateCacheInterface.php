@@ -8,4 +8,7 @@ interface TemplateCacheInterface
     public function get(string $filename): ?string;
     public function delete(string $filename): void;
     public function clear(): void;
+    public function getCacheDirectory(): string;
+
+    public function purgeExpired(): void;
 }
