@@ -1,31 +1,31 @@
 <?php
 
-namespace HCC\Events\Hook;
+namespace HCC\Events;
 
-use HCC\Events\Hook\Interfaces\CollectionInterface;
+use HCC\Events\Interfaces\CollectionInterface;
 
 /**
  * Class that stores module hooks in local state and accesses the global callback only when necessary
  */
-class HookCollection implements CollectionInterface
+class EventCollection implements CollectionInterface // ??? Setup to ommit global callbacks as well
 {
-    private array $hooksById = [];
-    private array $hookIdsByName = [];
+    private array $eventsById = [];
+    private array $eventIdsByName = [];
 
-    private CallbacksStore $handlers;
+    private CollectionCallbacksStore $handlers;
 
-    public function __construct(CallbacksStore $handlers)
+    public function __construct(CollectionCallbacksStore $handlers)
     {
         $this->handlers = $handlers;
     }
 
-    public function getAllHooks(string $hookName = '', int $priority = self::DEFAULT_PRIORITY): array
+    public function getAllEvents(string $eventName = '', int $priority = self::DEFAULT_PRIORITY): array
     {
-        return empty($hookName) ? $this->hooksById : $this->filterHooks($hookName, $priority);
+        return empty($eventName) ? $this->eventsById : $this->filterEvents($eventName, $priority);
     }
 
-    public function addHook(
-        string          $hookName,
+    public function addEvent(
+        string          $eventName,
         callable        $callback,
         int             $priority = self::DEFAULT_PRIORITY,
         int             $acceptedArgs = 1,
@@ -34,36 +34,36 @@ class HookCollection implements CollectionInterface
     ): void
     {
         $id = $id ?
-            $this->encodeId($id) : $this->generateHookId(hookName: $hookName, callback: $callback, priority: $priority);
-        $this->hooksById[$id] = new Hook(
-            hookName: $hookName,
+            $this->encodeId($id) : $this->generateEventId(eventName: $eventName, callback: $callback, priority: $priority);
+        $this->eventsById[$id] = new Event(
+            eventName: $eventName,
             callback: fn(...$args) => $callback(...array_slice($args, 0, $acceptedArgs)),
             priority: $priority,
             acceptedArgs: $acceptedArgs,
             component: $object,
             id: $id
         );
-        $this->hookIdsByName[$hookName][$priority][$id] = $id;
+        $this->eventIdsByName[$eventName][$priority][$id] = $id;
     }
 
-    public function removeHook(
-        string    $hookName,
+    public function removeEvent(
+        string    $eventName,
         string    $id = '',
         int       $priority = self::DEFAULT_PRIORITY,
         ?callable $callback = null
     ): bool
     {
         if (empty($id)) {
-            $id = 1 !== count($this->hookIdsByName[$hookName][$priority] ?? []) ?
-                $this->generateHookId(hookName: $hookName, callback: $callback, priority: $priority) :
-                (string) array_key_first($this->hookIdsByName[$hookName][$priority] ?? []);
+            $id = 1 !== count($this->eventIdsByName[$eventName][$priority] ?? []) ?
+                $this->generateEventId(eventName: $eventName, callback: $callback, priority: $priority) :
+                (string) array_key_first($this->eventIdsByName[$eventName][$priority] ?? []);
         }
 
-        if (!empty($this->findHookById($id))) {
-            unset($this->hooksById[$id]);
+        if (!empty($this->findEventById($id))) {
+            unset($this->eventsById[$id]);
 
-            if (!empty($this->hookIdsByName[$hookName][$priority][$id])) {
-                unset($this->hookIdsByName[$hookName][$priority][$id]);
+            if (!empty($this->eventIdsByName[$eventName][$priority][$id])) {
+                unset($this->eventIdsByName[$eventName][$priority][$id]);
             }
 
             return true;
@@ -72,53 +72,55 @@ class HookCollection implements CollectionInterface
         return false;
     }
 
-    public function registerHook(string $hookName, string $id = '', ?int $priority = null): void
+    public function registerEvent(string $eventName, string $id = '', ?int $priority = null): void
     {
-        $hook = $this->findHookById($id);
+        $hook = $this->findEventById($id);
+        // ???
         if (!is_null($hook)) {
-            $this->callHook($this->handlers->add, $hook->toArray());
+            $this->callEvent($this->handlers->add, $hook->toArray());
         }
     }
 
-    public function deregisterHook(string $hookName, string $id = '', ?int $priority = null): void
+    public function deregisterEvent(string $eventName, string $id = '', ?int $priority = null): void
     {
-        if (!$this->removeHook($hookName, $id, $priority)) {
-            $this->callHook($this->handlers->remove, [$hookName, $priority]);
+        if (!$this->removeEvent(eventName: $eventName, id: $id, priority: $priority)) {
+            $this->callEvent($this->handlers->remove, [$eventName, $priority]);
         }
     }
 
-    public function dispatchHook(string $hookName, string $id = '', ...$args): mixed
+    public function dispatchEvent(string $eventName, string $id = '', ...$args): mixed
     {
-        $hook = $this->findHookById($id);
+        $hook = $this->findEventById($id);
+        // ???
         if (!is_null($hook)) {
             return $hook->dispatch(...$args);
         }
 
-        return $this->callHook($this->handlers->execute, [$hookName, ...$args]);
+        return $this->callEvent($this->handlers->execute, [$eventName, ...$args]);
     }
 
-    protected function findHookById(string $id): ?Hook
+    protected function findEventById(string $id): ?Event
     {
-        return $this->hooksById[$id] ?? null;
+        return $this->eventsById[$id] ?? null;
     }
-    protected function filterHooks(string $hookName, int $priority = self::DEFAULT_PRIORITY): array
+    protected function filterEvents(string $hookName, int $priority = self::DEFAULT_PRIORITY): array
     {
-        $filteredHooks = array_filter(array_map(
-            fn(string $id) => $this->findHookById($id),
-            $this->hookIdsByName[$hookName][$priority] ?? []
+        $filteredEvents = array_filter(array_map(
+            fn(string $id) => $this->findEventById($id),
+            $this->eventIdsByName[$hookName][$priority] ?? []
         ));
-        if (count($filteredHooks) < 1) {
+        if (count($filteredEvents) < 1) {
             return [];
         }
 
-        if (count($filteredHooks) > 1) {
-            usort($filteredHooks, fn($a, $b) => ($a->priority ?? 0) <=> ($b->priority ?? 0));
+        if (count($filteredEvents) > 1) {
+            usort($filteredEvents, fn($a, $b) => ($a->priority ?? 0) <=> ($b->priority ?? 0));
         }
 
-        return array_values($filteredHooks);
+        return array_values($filteredEvents);
     }
 
-    protected function callHook(callable $handler, array $args): mixed
+    protected function callEvent(callable $handler, array $args): mixed
     {
         try {
             return call_user_func_array($handler, $args);
@@ -127,7 +129,7 @@ class HookCollection implements CollectionInterface
         }
     }
 
-    protected function generateHookId(string $hookName, array|object|string $callback, ?int $priority = null): string
+    protected function generateEventId(string $eventName, array|object|string $callback, ?int $priority = null): string
     {
         static $closureCache = [];
 
@@ -160,7 +162,7 @@ class HookCollection implements CollectionInterface
                 is_object($callback) => get_class($callback) . '@' . $this->encodeId(serialize($callback)),
                 default => spl_object_hash($callback),
             };
-            $toId = $hookName . '|' . $callbackId;
+            $toId = $eventName . '|' . $callbackId;
             if (!is_null($priority)) {
                 $toId .= '|' . $priority;
             }

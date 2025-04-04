@@ -1,11 +1,11 @@
 <?php
 
-namespace HCC\Events\Hook;
+namespace HCC\Events;
 
 /**
  * Class that describes a data structure
  */
-class CallbacksStore
+class CollectionCallbacksStore
 {
     public $add;
     public $remove;

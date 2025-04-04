@@ -1,8 +1,7 @@
 <?php
 
-namespace HCC\Events\Hook;
+namespace HCC\Events;
 
-use HCC\Events\Hook\Interfaces\HandlerInterface;
 use HCC\Events\Hook\Interfaces\CollectionInterface;
 
 /**
@@ -17,6 +16,9 @@ class Loader
      * @var array of Handler objects
      */
     private array $handlers;
+
+    public const ACTION = 'action';
+    public const FILTER = 'filter';
 
     public function __construct(array $callbacks = array())
     {
@@ -40,7 +42,7 @@ class Loader
 
     protected function buildHandler(CallbacksStore $callbacks): Handler
     {
-        return new Handler(new HookCollection($callbacks));
+        return new Handler(new EventCollection($callbacks));
     }
 
     protected function checkIfHandlerExist(string $type): void
