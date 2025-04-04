@@ -21,7 +21,8 @@ class EventCollection implements CollectionInterface // ??? Setup to ommit globa
 
     public function getAllEvents(string $eventName = '', int $priority = self::DEFAULT_PRIORITY): array
     {
-        return empty($eventName) ? $this->eventsById : $this->filterEvents($eventName, $priority);
+        return empty($eventName) || 'all' === $eventName
+            ? $this->eventsById : $this->filterEvents($eventName, $priority);
     }
 
     public function addEvent(

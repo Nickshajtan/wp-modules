@@ -2,33 +2,13 @@
 
 namespace HCC\Events\Dispatcher;
 
-use HCC\Events\Interfaces\EventDispatcherInterface;
-use HCC\Events\EventCollection;
-
-class SynchronousDispatcher implements EventDispatcherInterface
+use HCC\Events\Interfaces\CollectionInterface;
+class SynchronousDispatcher extends AbstractDispatcher
 {
-    private EventCollection $eventCollection;
-
-    public function __construct(EventCollection $eventCollection)
+    public function dispatch(string $eventName, int $priority = CollectionInterface::DEFAULT_PRIORITY, ...$args): void
     {
-        $this->eventCollection = $eventCollection;
-    }
-
-    public function dispatch(string $eventName, ...$args): void
-    {
-        $this->eventCollection->dispatchEvent($eventName, ...$args);
-    }
-
-    /**
-     * @return string Event id
-     */
-    public function addListener(...$args): string
-    {
-        return $this->eventCollection->addEvent(...$args);
-    }
-
-    public function removeListener(...$args): bool
-    {
-        return $this->eventCollection->removeEvent(...$args);
+        foreach ($this->getEvents($eventName, $priority) as $event) {
+            $this->eventCollection->dispatchEvent($event->eventName, ...$args);
+        }
     }
 }

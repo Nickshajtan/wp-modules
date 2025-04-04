@@ -27,7 +27,6 @@ class RabbitMQQueueEngine implements QueueEngineInterface
 
     public function process(): void
     {
-        // Отримуємо повідомлення з RabbitMQ та виконуємо завдання
         $callback = function (AMQPMessage $msg) {
             $job = unserialize($msg->getBody());
             $job->handle();
