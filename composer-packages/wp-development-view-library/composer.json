@@ -1,16 +1,15 @@
 {
   "name": "hcc/wp-development-view-library",
+  "license": "MIT",
   "description": "WordPress plugin development library for MVC view presentation",
-  "version": "1.0.0",
   "type": "library",
   "require": {
     "php": ">=8.2",
-    "composer/installers": "^1.10",
-    "hcc/wp-development-core-library": "^1.0"
+    "composer/installers": "^1.10"
   },
   "autoload": {
     "psr-4": {
-      "HCC\\View": "src/"
+      "HCC\\View\\": "src/"
     }
   },
   "extra": {
