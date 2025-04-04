@@ -31,7 +31,7 @@ class EventCollection implements CollectionInterface // ??? Setup to ommit globa
         int             $acceptedArgs = 1,
         ?object         $object = null,
         null|string|int $id = null
-    ): void
+    ): string
     {
         $id = $id ?
             $this->encodeId($id) : $this->generateEventId(eventName: $eventName, callback: $callback, priority: $priority);
@@ -44,6 +44,8 @@ class EventCollection implements CollectionInterface // ??? Setup to ommit globa
             id: $id
         );
         $this->eventIdsByName[$eventName][$priority][$id] = $id;
+
+        return $id;
     }
 
     public function removeEvent(
@@ -88,15 +90,15 @@ class EventCollection implements CollectionInterface // ??? Setup to ommit globa
         }
     }
 
-    public function dispatchEvent(string $eventName, string $id = '', ...$args): mixed
+    public function dispatchEvent(string $eventName, string $id = '', ...$args): void
     {
         $hook = $this->findEventById($id);
         // ???
         if (!is_null($hook)) {
-            return $hook->dispatch(...$args);
+            $hook->dispatch(...$args);
         }
 
-        return $this->callEvent($this->handlers->execute, [$eventName, ...$args]);
+        $this->callEvent($this->handlers->execute, [$eventName, ...$args]);
     }
 
     protected function findEventById(string $id): ?Event

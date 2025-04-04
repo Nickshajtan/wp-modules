@@ -13,7 +13,7 @@ interface CollectionInterface
         int             $acceptedArgs = 1,
         ?object         $object = null,
         null|string|int $id = null
-    ): void;
+    ): string;
 
     public function removeEvent(
         string    $eventName,
@@ -26,7 +26,7 @@ interface CollectionInterface
 
     public function deregisterEvent(string $eventName, string $id = '', ?int $priority = null): void;
 
-    public function dispatchEvent(string $eventName, string $id = '', ...$args): mixed;
+    public function dispatchEvent(string $eventName, string $id = '', ...$args): void;
 
     public function getAllEvents(string $eventName = '', int $priority = self::DEFAULT_PRIORITY): array;
 }
