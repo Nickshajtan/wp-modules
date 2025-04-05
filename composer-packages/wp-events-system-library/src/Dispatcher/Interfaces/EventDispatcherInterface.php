@@ -1,6 +1,8 @@
 <?php
 
-namespace HCC\Events\Interfaces;
+namespace HCC\Events\Dispatcher\Interfaces;
+
+use HCC\Events\Interfaces\CollectionInterface;
 
 interface EventDispatcherInterface
 {

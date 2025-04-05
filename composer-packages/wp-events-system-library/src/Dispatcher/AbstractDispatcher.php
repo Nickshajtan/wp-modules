@@ -3,7 +3,7 @@
 namespace HCC\Events\Dispatcher;
 
 use HCC\Events\EventCollection;
-use HCC\Events\Interfaces\EventDispatcherInterface;
+use HCC\Events\Dispatcher\Interfaces\EventDispatcherInterface;
 
 abstract class AbstractDispatcher implements EventDispatcherInterface
 {
