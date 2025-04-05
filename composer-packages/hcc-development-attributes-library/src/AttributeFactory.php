@@ -2,7 +2,7 @@
 
 namespace HCC\Core\Attribute;
 
-use HCC\Core\Attribute\Interfaces\AttributeHandlerInterface;
+use HCC\Attribute\Interfaces\AttributeHandlerInterface;
 
 class AttributeFactory
 {

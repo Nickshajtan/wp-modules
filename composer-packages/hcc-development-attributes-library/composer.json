@@ -1,6 +1,6 @@
 {
-  "name": "hcc/wp-development-core-library",
-  "description": "WordPress development framework with reusable components",
+  "name": "hcc/development-attributes-library",
+  "description": "PHP 8 Attributes support with reusable components",
   "version": "1.0.0",
   "type": "library",
   "require": {
@@ -11,11 +11,11 @@
   },
   "autoload": {
     "psr-4": {
-      "HCC\\Core": "src/"
+      "HCC\\Attribute": "src/"
     }
   },
   "extra": {
-    "installer-name": "wp-development-core-library"
+    "installer-name": "hcc-development-attributes-library"
   },
   "config": {
     "vendor-dir": "lib"

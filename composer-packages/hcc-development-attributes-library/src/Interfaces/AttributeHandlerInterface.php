@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\Core\Attribute\Interfaces;
+namespace HCC\Attribute\Interfaces;
 
 interface AttributeHandlerInterface
 {
