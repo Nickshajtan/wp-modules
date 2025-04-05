@@ -1,12 +1,12 @@
 {
   "name": "hcc/wp-development-plugin-library",
-  "description": "WordPress plugin development framework with reusable components",
+  "description": "WordPress reusable components for custom plugin development",
   "version": "1.0.0",
   "type": "library",
   "require": {
     "php": ">=8.2",
     "composer/installers": "^1.10",
-    "hcc/wp-development-core-library": "^1.0"
+    "hcc/container-library": "^1.0"
   },
   "autoload": {
     "psr-4": {

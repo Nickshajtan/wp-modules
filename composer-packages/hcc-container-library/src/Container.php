@@ -1,8 +1,8 @@
 <?php
 
-namespace HCC\Core\Container;
+namespace HCC\Container;
 
-use HCC\Core\Container\Interfaces\ContainerInterface;
+use HCC\Container\Interfaces\ContainerInterface;
 use \Psr\SimpleCache\CacheInterface;
 class Container implements ContainerInterface
 {

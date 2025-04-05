@@ -1,7 +1,7 @@
 {
   "name": "hcc/development-view-library",
   "license": "MIT",
-  "description": "WordPress plugin development library for MVC view presentation",
+  "description": "Package for MVC view presentation",
   "type": "library",
   "require": {
     "php": ">=8.2",

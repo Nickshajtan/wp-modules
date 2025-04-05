@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\Core\Container\Interfaces;
+namespace HCC\Container\Interfaces;
 
 interface ServiceProviderInterface
 {
