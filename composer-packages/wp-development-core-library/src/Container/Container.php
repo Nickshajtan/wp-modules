@@ -3,7 +3,7 @@
 namespace HCC\Core\Container;
 
 use HCC\Core\Container\Interfaces\ContainerInterface;
-use HCC\Core\Cache\Interfaces\CacheInterface;
+use \Psr\SimpleCache\CacheInterface;
 class Container implements ContainerInterface
 {
     private array $services = array();
