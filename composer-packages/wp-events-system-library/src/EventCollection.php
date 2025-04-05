@@ -6,15 +6,16 @@ use HCC\Events\Interfaces\CollectionInterface;
 
 /**
  * Class that stores module hooks in local state and accesses the global callback only when necessary
+ * TODO: Move global callbacks to the separated class? Will see in the plugin boilerplate
  */
-class EventCollection implements CollectionInterface // ??? Setup to ommit global callbacks as well
+class EventCollection implements CollectionInterface
 {
     private array $eventsById = [];
     private array $eventIdsByName = [];
 
-    private CollectionCallbacksStore $handlers;
+    private ?CollectionCallbacksStore $handlers;
 
-    public function __construct(CollectionCallbacksStore $handlers)
+    public function __construct(?CollectionCallbacksStore $handlers = null)
     {
         $this->handlers = $handlers;
     }
@@ -56,13 +57,11 @@ class EventCollection implements CollectionInterface // ??? Setup to ommit globa
         ?callable $callback = null
     ): bool
     {
-        if (empty($id)) {
-            $id = 1 !== count($this->eventIdsByName[$eventName][$priority] ?? []) ?
-                $this->generateEventId(eventName: $eventName, callback: $callback, priority: $priority) :
-                (string) array_key_first($this->eventIdsByName[$eventName][$priority] ?? []);
+        if (empty($id) && is_callable($callback)) {
+            $id = $this->findEventIdByName($eventName, $callback, $priority);
         }
 
-        if (!empty($this->findEventById($id))) {
+        if (!is_null($this->findEventById($id))) {
             unset($this->eventsById[$id]);
 
             if (!empty($this->eventIdsByName[$eventName][$priority][$id])) {
@@ -77,35 +76,50 @@ class EventCollection implements CollectionInterface // ??? Setup to ommit globa
 
     public function registerEvent(string $eventName, string $id = '', ?int $priority = null): void
     {
-        $hook = $this->findEventById($id);
-        // ???
-        if (!is_null($hook)) {
-            $this->callEvent($this->handlers->add, $hook->toArray());
+        if (!empty($id)) {
+            $hook = $this->findEventById($id);
+            if (!is_null($hook) && isset($this->handlers->add) && is_callable($this->handlers->add)) {
+                $this->callEvent($this->handlers->add, $hook->toArray());
+            }
         }
     }
 
     public function deregisterEvent(string $eventName, string $id = '', ?int $priority = null): void
     {
-        if (!$this->removeEvent(eventName: $eventName, id: $id, priority: $priority)) {
+        if (!$this->removeEvent(eventName: $eventName, id: $id, priority: $priority) &&
+            isset($this->handlers->remove) && is_callable($this->handlers->remove)
+        ) {
             $this->callEvent($this->handlers->remove, [$eventName, $priority]);
         }
     }
 
     public function dispatchEvent(string $eventName, string $id = '', ...$args): void
     {
-        $hook = $this->findEventById($id);
-        // ???
-        if (!is_null($hook)) {
-            $hook->dispatch(...$args);
+        if (!empty($id)) {
+            $hook = $this->findEventById($id);
+            if (!is_null($hook)) {
+                $hook->dispatch(...$args);
+                return;
+            }
         }
 
-        $this->callEvent($this->handlers->execute, [$eventName, ...$args]);
+        if (isset($this->handlers->execute) && is_callable($this->handlers->execute)) {
+            $this->callEvent($this->handlers->execute, [$eventName, ...$args]);
+        }
     }
 
     protected function findEventById(string $id): ?Event
     {
         return $this->eventsById[$id] ?? null;
     }
+
+    protected function findEventIdByName(string $eventName, callable $callback, int $priority = self::DEFAULT_PRIORITY): string
+    {
+        return 1 !== count($this->eventIdsByName[$eventName][$priority] ?? []) ?
+            $this->generateEventId(eventName: $eventName, callback: $callback, priority: $priority) :
+            (string)array_key_first($this->eventIdsByName[$eventName][$priority] ?? []);
+    }
+
     protected function filterEvents(string $hookName, int $priority = self::DEFAULT_PRIORITY): array
     {
         $filteredEvents = array_filter(array_map(
