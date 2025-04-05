@@ -14,7 +14,7 @@
     }
   },
   "extra": {
-    "installer-name": "wp-development-plugin-library"
+    "installer-name": "hcc-wp-development-plugin-library"
   },
   "config": {
     "vendor-dir": "lib"

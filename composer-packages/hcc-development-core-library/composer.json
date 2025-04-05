@@ -6,7 +6,8 @@
   "require": {
     "php": ">=8.2",
     "composer/installers": "^1.10",
-    "psr/simple-cache": "^3.0"
+    "psr/simple-cache": "^3.0",
+    "psr/container": "^2.0.2"
   },
   "autoload": {
     "psr-4": {

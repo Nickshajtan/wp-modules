@@ -2,7 +2,9 @@
 
 namespace HCC\Core\Container\Interfaces;
 
-interface ContainerInterface
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+
+interface ContainerInterface extends PsrContainerInterface
 {
     public function has(string $name): bool;
 

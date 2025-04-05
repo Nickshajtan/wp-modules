@@ -1,5 +1,5 @@
 {
-  "name": "hcc/wp-event-system-library",
+  "name": "hcc/event-system-library",
   "description": "Event system to combine WordPress actions with external events support",
   "version": "1.0.0",
   "type": "library",
@@ -14,7 +14,7 @@
     }
   },
   "extra": {
-    "installer-name": "wp-event-system-library"
+    "installer-name": "hcc-event-system-library"
   },
   "config": {
     "vendor-dir": "lib"

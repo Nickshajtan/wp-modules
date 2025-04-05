@@ -1,5 +1,5 @@
 {
-  "name": "hcc/wp-development-view-library",
+  "name": "hcc/development-view-library",
   "license": "MIT",
   "description": "WordPress plugin development library for MVC view presentation",
   "type": "library",
@@ -13,7 +13,7 @@
     }
   },
   "extra": {
-    "installer-name": "wp-development-view-library"
+    "installer-name": "hcc-development-view-library"
   },
   "config": {
     "vendor-dir": "lib"
