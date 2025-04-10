@@ -1,0 +1,23 @@
+{
+  "name": "hcc/cache-library",
+  "description": "Reusable components for caching",
+  "version": "1.0.0",
+  "type": "library",
+  "require": {
+    "php": ">=8.2",
+    "composer/installers": "^1.10",
+    "psr/simple-cache": "^3.0",
+    "psr/cache": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "HCC\\Cache": "src/"
+    }
+  },
+  "extra": {
+    "installer-name": "hcc-cache-library"
+  },
+  "config": {
+    "vendor-dir": "lib"
+  }
+}
