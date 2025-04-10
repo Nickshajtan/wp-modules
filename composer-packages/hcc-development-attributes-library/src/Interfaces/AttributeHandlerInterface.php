@@ -1,8 +1,8 @@
 <?php
 
-namespace HCC\Attribute\Interfaces;
+namespace HCC\Attributes\Interfaces;
 
 interface AttributeHandlerInterface
 {
-    public function handle(object $attributeInstance, object $targetObject, \Reflector $reflection): void;
+    public function handle(AttributeInterface $attributeInstance, ?object $targetObject, \Reflector $reflection): void;
 }

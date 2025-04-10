@@ -1,8 +1,9 @@
 <?php
 
-namespace HCC\Core\Attribute;
+namespace HCC\Attributes;
 
-use HCC\Attribute\Interfaces\AttributeHandlerInterface;
+use HCC\Attributes\Interfaces\AttributeHandlerInterface;
+use HCC\Attributes\Interfaces\AttributeInterface;
 
 class AttributeFactory
 {
@@ -10,53 +11,46 @@ class AttributeFactory
 
     public function register(string $attributeClass, AttributeHandlerInterface $handler): void
     {
+        if (!is_subclass_of($attributeClass, AttributeInterface::class)) {
+            throw new \InvalidArgumentException('The provided class must be an instance of Attribute.');
+        }
+
         $this->handlers[$attributeClass] = $handler;
     }
 
     public function handleAttributes(object $targetObject): void
     {
-        $refClass = new \ReflectionObject($targetObject);
+        $reflectionClass = new \ReflectionClass($targetObject);
 
-        foreach ($this->getAllReflections($refClass) as [$reflection, $attribute]) {
-            $attributeName = $attribute->getName();
+        // Обробка атрибутів класу
+        foreach ($reflectionClass->getAttributes() as $attribute) {
+            $handler = $this->getHandler($attribute->getName());
+            $handler->handle($attribute->newInstance(), $targetObject, $reflectionClass);
+        }
 
-            if (!isset($this->handlers[$attributeName])) {
-                continue; // Ігноруємо не зареєстровані атрибути
+        // Обробка атрибутів властивостей
+        foreach ($reflectionClass->getProperties() as $property) {
+            foreach ($property->getAttributes() as $attribute) {
+                $handler = $this->getHandler($attribute->getName());
+                $handler->handle($attribute->newInstance(), $targetObject, $property);
             }
+        }
 
-            $handler = $this->handlers[$attributeName];
-            $attributeInstance = $attribute->newInstance();
-
-            $handler->handle($attributeInstance, $targetObject, $reflection);
+        // Обробка атрибутів методів
+        foreach ($reflectionClass->getMethods() as $method) {
+            foreach ($method->getAttributes() as $attribute) {
+                $handler = $this->getHandler($attribute->getName());
+                $handler->handle($attribute->newInstance(), $targetObject, $method);
+            }
         }
     }
 
-    protected function getAllReflections(\ReflectionClass $class): iterable
+    protected function getHandler(string $attributeClass): AttributeHandlerInterface
     {
-        // Клас
-        foreach ($class->getAttributes() as $attr) {
-            yield [$class, $attr];
+        if (!isset($this->handlers[$attributeClass])) {
+            throw new \RuntimeException("Handler for attribute '$attributeClass' not found.");
         }
 
-        // Властивості
-        foreach ($class->getProperties() as $prop) {
-            foreach ($prop->getAttributes() as $attr) {
-                yield [$prop, $attr];
-            }
-        }
-
-        // Методи
-        foreach ($class->getMethods() as $method) {
-            foreach ($method->getAttributes() as $attr) {
-                yield [$method, $attr];
-            }
-
-            // Параметри методів
-            foreach ($method->getParameters() as $param) {
-                foreach ($param->getAttributes() as $attr) {
-                    yield [$param, $attr];
-                }
-            }
-        }
+        return $this->handlers[$attributeClass];
     }
 }

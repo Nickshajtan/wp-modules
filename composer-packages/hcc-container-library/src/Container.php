@@ -6,9 +6,9 @@ use HCC\Container\Interfaces\ContainerInterface;
 use \Psr\SimpleCache\CacheInterface;
 class Container implements ContainerInterface
 {
-    private array $services = array();
-    private array $instances = array();
-    private array $singletons = array();
+    private array $services = [];
+    private array $instances = [];
+    private array $singletons = [];
 
     private ?CacheInterface $cache;
 
