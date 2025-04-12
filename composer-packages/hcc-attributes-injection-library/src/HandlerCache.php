@@ -4,8 +4,9 @@ namespace HCC\Attributes;
 
 use Psr\Cache\CacheItemPoolInterface;
 use HCC\Attributes\Interfaces\AttributeHandlerInterface;
+use HCC\Attributes\Interfaces\HandlerCacheInterface;
 
-class HandlerCache
+class HandlerCache implements HandlerCacheInterface
 {
     private CacheItemPoolInterface $cachePool;
 

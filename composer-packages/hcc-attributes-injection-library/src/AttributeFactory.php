@@ -3,6 +3,8 @@
 namespace HCC\Attributes;
 
 use HCC\Attributes\Interfaces\AttributeInterface;
+use HCC\Attributes\Interfaces\HandlerCacheInterface;
+use HCC\Attributes\Interfaces\ReflectionCacheInterface;
 
 /**
  * $cachePool = new SomeCachePool();
@@ -17,13 +19,13 @@ use HCC\Attributes\Interfaces\AttributeInterface;
  */
 class AttributeFactory
 {
-    private ReflectionCache $reflectionCache;
+    private ReflectionCacheInterface $reflectionCache;
 
-    private HandlerCache $handlerCache;
+    private HandlerCacheInterface $handlerCache;
 
     private array $handlers = [];
 
-    public function __construct(ReflectionCache $reflectionCache, HandlerCache $handlerCache)
+    public function __construct(ReflectionCacheInterface $reflectionCache, HandlerCacheInterface $handlerCache)
     {
         $this->reflectionCache = $reflectionCache;
         $this->handlerCache = $handlerCache;

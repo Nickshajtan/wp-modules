@@ -2,13 +2,15 @@
 
 namespace HCC\Attributes;
 
+use HCC\Attributes\Interfaces\AttributeInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use HCC\Attributes\Interfaces\ReflectionCacheInterface;
 use \ReflectionClass;
 use \ReflectionFunction;
 use \ReflectionMethod;
 use \ReflectionProperty;
 
-class ReflectionCache
+class ReflectionCache implements ReflectionCacheInterface
 {
     private CacheItemPoolInterface $cachePool;
     private array $reflectionMemoryCache = [];
@@ -138,7 +140,7 @@ class ReflectionCache
         return $cacheItem->get();
     }
 
-    public function restoreAttribute(array $data): object
+    public function restoreAttribute(array $data): AttributeInterface
     {
         return new ($data['name'])(...$data['args']);
     }
