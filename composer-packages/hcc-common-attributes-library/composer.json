@@ -1,5 +1,5 @@
 {
-  "name": "hcc/development-attributes-library",
+  "name": "hcc/common-attributes-library",
   "description": "PHP 8 Attributes support with reusable components",
   "version": "1.0.0",
   "type": "library",
@@ -16,7 +16,7 @@
     }
   },
   "extra": {
-    "installer-name": "hcc-development-attributes-library"
+    "installer-name": "hcc-common-attributes-library"
   },
   "config": {
     "vendor-dir": "lib"
