@@ -2,55 +2,88 @@
 
 namespace HCC\Attributes;
 
-use HCC\Attributes\Interfaces\AttributeHandlerInterface;
 use HCC\Attributes\Interfaces\AttributeInterface;
 
+/**
+ * $cachePool = new SomeCachePool();
+ * $reflectionCache = new ReflectionCache($cachePool);
+ *
+ * $attributeFactory = new AttributeFactory($reflectionCache);
+ *
+ * $attributeFactory->registerHandler(Service::class, new ServiceHandler($container));
+ * $targetObject = new YourClass();
+ * $attributeFactory->handleAttributes($targetObject);
+ *
+ */
 class AttributeFactory
 {
-    protected array $handlers = [];
+    private ReflectionCache $reflectionCache;
 
-    public function register(string $attributeClass, AttributeHandlerInterface $handler): void
+    private HandlerCache $handlerCache;
+
+    private array $handlers = [];
+
+    public function __construct(ReflectionCache $reflectionCache, HandlerCache $handlerCache)
     {
-        if (!is_subclass_of($attributeClass, AttributeInterface::class)) {
-            throw new \InvalidArgumentException('The provided class must be an instance of Attribute.');
-        }
+        $this->reflectionCache = $reflectionCache;
+        $this->handlerCache = $handlerCache;
+    }
 
+    public function registerHandler(string $attributeClass, callable $handler): void
+    {
         $this->handlers[$attributeClass] = $handler;
+    }
+
+    public function enableCaching(): void
+    {
+        $this->reflectionCache->enable();
+    }
+
+    public function disableCaching(): void
+    {
+        $this->reflectionCache->disable();
     }
 
     public function handleAttributes(object $targetObject): void
     {
-        $reflectionClass = new \ReflectionClass($targetObject);
+        $className = get_class($targetObject);
+        $classReflection = $this->reflectionCache->getClassReflection($className);
 
-        // Обробка атрибутів класу
-        foreach ($reflectionClass->getAttributes() as $attribute) {
-            $handler = $this->getHandler($attribute->getName());
-            $handler->handle($attribute->newInstance(), $targetObject, $reflectionClass);
+        foreach ($this->reflectionCache->getClassReflectionAttributes($className) as $data) {
+            $this->processAttribute($this->reflectionCache->restoreAttribute($data), $targetObject, $classReflection);
         }
 
-        // Обробка атрибутів властивостей
-        foreach ($reflectionClass->getProperties() as $property) {
-            foreach ($property->getAttributes() as $attribute) {
-                $handler = $this->getHandler($attribute->getName());
-                $handler->handle($attribute->newInstance(), $targetObject, $property);
+        foreach ($classReflection->getMethods() as $method) {
+            foreach ($this->reflectionCache->getMethodReflectionAttributes($className, $method->getName()) as $data) {
+                $this->processAttribute($this->reflectionCache->restoreAttribute($data), $targetObject, $method);
             }
         }
 
-        // Обробка атрибутів методів
-        foreach ($reflectionClass->getMethods() as $method) {
-            foreach ($method->getAttributes() as $attribute) {
-                $handler = $this->getHandler($attribute->getName());
-                $handler->handle($attribute->newInstance(), $targetObject, $method);
+        foreach ($classReflection->getProperties() as $property) {
+            foreach ($this->reflectionCache->getPropertyReflectionAttributes($className, $property->getName()) as $data) {
+                $this->processAttribute($this->reflectionCache->restoreAttribute($data), $targetObject, $property);
             }
         }
     }
 
-    protected function getHandler(string $attributeClass): AttributeHandlerInterface
+    public function handleFunction(string $functionName): void
     {
-        if (!isset($this->handlers[$attributeClass])) {
-            throw new \RuntimeException("Handler for attribute '$attributeClass' not found.");
+        foreach ($this->reflectionCache->getFunctionReflectionAttributes($functionName) as $data) {
+            $this->processAttribute(
+                $this->reflectionCache->restoreAttribute($data),
+                null,
+                $this->reflectionCache->getFunctionReflection($functionName)
+            );
+        }
+    }
+
+    protected function processAttribute(AttributeInterface $attribute, ?object $targetObject, \Reflector $reflection): void
+    {
+        if (!isset($this->handlers[$attribute::class])) {
+            throw new \LogicException("No handler registered for attribute {$attribute::class}");
         }
 
-        return $this->handlers[$attributeClass];
+        $handler = $this->handlerCache->getHandler($attribute::class, $this->handlers[$attribute::class]);
+        $handler->handle($attribute, $targetObject, $reflection);
     }
 }

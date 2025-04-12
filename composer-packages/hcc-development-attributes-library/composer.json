@@ -6,8 +6,9 @@
   "require": {
     "php": ">=8.2",
     "composer/installers": "^1.10",
-    "psr/simple-cache": "^3.0",
-    "hcc/container-library": "^1.0"
+    "psr/cache": "^3.0",
+    "hcc/container-library": "^1.0",
+    "hcc/cache-library": "^1.0"
   },
   "autoload": {
     "psr-4": {
