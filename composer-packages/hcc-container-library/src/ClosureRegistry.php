@@ -21,7 +21,7 @@ class ClosureRegistry implements ContainerInterface
 
     public function get(string $name): mixed
     {
-        if (is_callable($this->instances[$name])) {
+        if (isset($this->instances[$name]) && is_callable($this->instances[$name])) {
             return $this->instances[$name];
         }
 
