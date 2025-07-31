@@ -84,6 +84,7 @@ class Container implements ContainerInterface
     public function forget(string $name): void
     {
         unset($this->instances[$name]);
+        unset($this->services[$name]);
 
         if ($this->isCacheEnabled()) {
             $this->cache->delete($name);
