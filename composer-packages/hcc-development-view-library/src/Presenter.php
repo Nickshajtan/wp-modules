@@ -14,7 +14,7 @@ class Presenter
     private TemplateResolverInterface $resolver;
     private TemplateLocatorInterface $locator;
 
-    public function __construct(TemplateLocator $locator, TemplateResolverInterface $resolver)
+    public function __construct(TemplateLocatorInterface $locator, TemplateResolverInterface $resolver)
     {
         $this->resolver = $resolver;
         $this->locator = $locator;

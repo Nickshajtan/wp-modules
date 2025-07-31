@@ -1,7 +1,7 @@
 {
   "name": "hcc/container-library",
   "description": "DI Container for reusable components",
-  "license": "proprietary",
+  "license": "MIT",
   "version": "1.0.0",
   "type": "library",
   "require": {
