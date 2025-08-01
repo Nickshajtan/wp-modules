@@ -10,7 +10,7 @@ class StorageFacade
     private static array $instances = [];
     private string $group;
 
-    private function __construct(string $group)
+    protected function __construct(string $group)
     {
         $this->group = $group;
     }

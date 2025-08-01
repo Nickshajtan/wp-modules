@@ -7,7 +7,7 @@ use HCC\View\Storage\StorageFacade;
 
 class TemplateLocator implements TemplateLocatorInterface
 {
-    private StorageFacade $storage;
+    protected StorageFacade $storage;
     private array $searchPaths;
 
     public function __construct(string $group, array $defaultPaths = [])

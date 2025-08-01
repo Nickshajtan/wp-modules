@@ -1,0 +1,10 @@
+{
+    "name": "hcc/development-view-library-tests",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "twig/twig": "^3.21",
+        "illuminate/view": "^12.21",
+        "illuminate/filesystem": "^12.21"
+    }
+}

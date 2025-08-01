@@ -25,6 +25,6 @@
     "phpunit/phpunit": "^11.5"
   },
   "scripts": {
-    "test": "lib/bin/phpunit --display-warnings"
+    "test": "lib/bin/phpunit --display-warnings --testsuite unit"
   }
 }
