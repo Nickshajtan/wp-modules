@@ -49,21 +49,6 @@ class TemplateEngineResolverTest extends TestCase
         );
     }
 
-    /*public function testResolveTwigThrowsIfTwigMissing(): void
-    {
-        if (class_exists('Twig\Environment')) {
-            $this->markTestSkipped('Twig is installed — cannot test missing Twig.');
-        }
-
-        $cache = $this->createMock(TemplateCacheInterface::class);
-        $resolver = new TemplateEngineResolver('group', $cache);
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Twig is not installed');
-
-        $resolver->resolve('test.twig', '/path/test.twig');
-    }*/
-
     public function testResolveBladeEngineWhenBladeAvailable(): void
     {
         $bladeClasses = [
@@ -86,29 +71,4 @@ class TemplateEngineResolverTest extends TestCase
             $this->resolver->resolve('simple.blade.php', __DIR__ . '/_fixtures/simple.blade.php')
         );
     }
-
-    /*
-    public function testResolveBladeThrowsIfBladeMissing(): void
-    {
-        $bladeClasses = [
-            '\Illuminate\Filesystem\Filesystem',
-            '\Illuminate\View\Compilers\BladeCompiler',
-            '\Illuminate\View\FileViewFinder',
-            '\Illuminate\View\Engines\CompilerEngine',
-            '\Illuminate\View\Factory'
-        ];
-
-        $anyMissing = array_filter($bladeClasses, fn($class) => !class_exists($class));
-        if (empty($anyMissing)) {
-            $this->markTestSkipped('Blade is installed — cannot test missing Blade.');
-        }
-
-        $cache = $this->createMock(TemplateCacheInterface::class);
-        $resolver = new TemplateEngineResolver('group', $cache);
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Blade is not installed');
-
-        $resolver->resolve('template.blade.php', '/path/template.blade.php');
-    }*/
 }

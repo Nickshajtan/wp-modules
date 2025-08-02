@@ -24,6 +24,11 @@
   "require-dev": {
     "phpunit/phpunit": "^11.5"
   },
+  "suggest": {
+    "twig/twig": "Required to use Twig templates",
+    "illuminate/view": "Required to use Blade templates",
+    "illuminate/filesystem": "Required to use Blade templates"
+  },
   "scripts": {
     "test": "lib/bin/phpunit --display-warnings --testsuite unit",
     "functional-test": [
