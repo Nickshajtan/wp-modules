@@ -40,10 +40,12 @@ class TemplateEngineResolver implements TemplateResolverInterface
 
         if (str_ends_with($template, '.blade.php')) {
             $classes = [
+                '\Illuminate\View\Engines\EngineResolver',
                 '\Illuminate\Filesystem\Filesystem',
                 '\Illuminate\View\Compilers\BladeCompiler',
                 '\Illuminate\View\FileViewFinder',
                 '\Illuminate\View\Engines\CompilerEngine',
+                '\Illuminate\Events\Dispatcher',
                 '\Illuminate\View\Factory'
             ];
 

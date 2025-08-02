@@ -5,9 +5,11 @@ namespace HCC\View\Engine;
 use HCC\View\Interfaces\TemplateEngineInterface;
 use HCC\View\Interfaces\TemplateCacheInterface;
 use \Illuminate\Filesystem\Filesystem;
+use Illuminate\View\Engines\EngineResolver;
 use \Illuminate\View\Compilers\BladeCompiler;
 use \Illuminate\View\FileViewFinder;
 use \Illuminate\View\Engines\CompilerEngine;
+use Illuminate\Events\Dispatcher;
 use \Illuminate\View\Factory;
 
 class BladeEngine implements TemplateEngineInterface
@@ -19,8 +21,10 @@ class BladeEngine implements TemplateEngineInterface
         $cacheDir = $cache ? $cache->getCacheDirectory() : dirname($path);
         $filesystem = new Filesystem();
         $compiler = new BladeCompiler($filesystem, $cacheDir);
-        $viewFinder = new FileViewFinder($filesystem, [$path]);
-        $this->viewFactory = new Factory(new CompilerEngine($compiler), $viewFinder);
+        $resolver = new EngineResolver();
+        $resolver->register('blade', fn() => new CompilerEngine($compiler) );
+        $this->viewFactory = new Factory( $resolver, new FileViewFinder($filesystem, [$path]), new Dispatcher());
+        $this->viewFactory->addExtension('blade.php', 'blade');
     }
     public function render(string $path, array $data = []): string
     {

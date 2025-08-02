@@ -3,27 +3,30 @@
 use HCC\View\Cache\TemplateFileCache;
 use HCC\View\Engine\PhpEngine;
 use HCC\View\Engine\TwigEngine;
+use HCC\View\Engine\BladeEngine;
 use HCC\View\TemplateEngineResolver;
 use PHPUnit\Framework\TestCase;
 
 class TemplateEngineResolverTest extends TestCase
 {
     private TemplateEngineResolver $resolver;
-
-    /*public static function tearDownAfterClass(): void
-    {
-        $workingDir = __DIR__ . DIRECTORY_SEPARATOR . '_dependencies/vendor';
-        if ( is_dir($workingDir) ) {
-            @rmdir($workingDir);
-        }
-    }*/
+    private string $cacheDir;
 
     public function setUp(): void
     {
+        $this->cacheDir = sys_get_temp_dir() . '/test_cache';
         $this->resolver = new TemplateEngineResolver(
             'test',
-            $this->createMock(TemplateFileCache::class)
+            $this->getMockBuilder(TemplateFileCache::class)
+                ->setConstructorArgs([$this->cacheDir, 3600])
+                ->onlyMethods(['set', 'get', 'delete', 'clear', 'purgeExpired'])
+                ->getMock()
         );
+    }
+
+    public function tearDown(): void
+    {
+        @rmdir($this->cacheDir);
     }
 
     public function testResolvePhpEngine(): void
@@ -46,20 +49,7 @@ class TemplateEngineResolverTest extends TestCase
         );
     }
 
-    /*
-     *
-     * private function makeResolverWithInjectedStorage(StorageFacade $storage, TemplateCacheInterface $cache): TemplateEngineResolver
-    {
-        $resolver = new TemplateEngineResolver('group', $cache);
-        $ref = new \ReflectionClass($resolver);
-        $prop = $ref->getProperty('storage');
-        $prop->setAccessible(true);
-        $prop->setValue($resolver, $storage);
-
-        return $resolver;
-    }
-
-    public function testResolveTwigThrowsIfTwigMissing(): void
+    /*public function testResolveTwigThrowsIfTwigMissing(): void
     {
         if (class_exists('Twig\Environment')) {
             $this->markTestSkipped('Twig is installed — cannot test missing Twig.');
@@ -72,8 +62,32 @@ class TemplateEngineResolverTest extends TestCase
         $this->expectExceptionMessage('Twig is not installed');
 
         $resolver->resolve('test.twig', '/path/test.twig');
+    }*/
+
+    public function testResolveBladeEngineWhenBladeAvailable(): void
+    {
+        $bladeClasses = [
+            '\Illuminate\View\Engines\EngineResolver',
+            '\Illuminate\Filesystem\Filesystem',
+            '\Illuminate\View\Compilers\BladeCompiler',
+            '\Illuminate\View\FileViewFinder',
+            '\Illuminate\View\Engines\CompilerEngine',
+            '\Illuminate\Events\Dispatcher',
+            '\Illuminate\View\Factory'
+        ];
+
+        $anyMissing = array_filter($bladeClasses, fn($class) => class_exists($class));
+        if (count($anyMissing) !== count($bladeClasses)) {
+            $this->markTestSkipped('Blade is not installed');
+        }
+
+        $this->assertInstanceOf(
+            BladeEngine::class,
+            $this->resolver->resolve('simple.blade.php', __DIR__ . '/_fixtures/simple.blade.php')
+        );
     }
 
+    /*
     public function testResolveBladeThrowsIfBladeMissing(): void
     {
         $bladeClasses = [
