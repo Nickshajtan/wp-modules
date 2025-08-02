@@ -39,11 +39,11 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 16) Network of network filesystem access, db access... TBD
 17) Domain mapping (for multisite)
 18) Different databases for Network
-19) Mongo for Gutenberg, Apollo for Gutenberg; Gutenberg boilerplate plugin
+19) Mongo for Gutenberg, Apollo for Gutenberg; Gutenberg boilerplate plugin. Elastic for search
 20) Perks + Quick Edit perks, Formats, Featured, Advanced Search (by ID also)
 21) PublishPress (?) Autopublishment
 22) Media management plugin (3d-party video like Vistia, Youtube - TBD). Media cropping optimize (on the fly by cron and store in cloud)
-23) Admin pages speed optimization plugin
+23) Admin pages speed optimization plugin (with Elastic?)
 
 ## Optimization packages (TBD)
 1) Webpp optimization + analogue for video
@@ -69,3 +69,4 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 9) Slots https://github.com/humanmade/react-slot-fill?tab=readme-ov-file and https://developer.wordpress.org/block-editor/reference-guides/components/slot-fill/
 10) Own gRPC server and gateway?
 11) https://wordpress.stackexchange.com/questions/251116/how-to-use-wordpress-multisite-with-different-domain-names, https://florianbrinkmann.com/en/wordpress-multisite-mix-of-subdomains-and-subdirectories-3446/
+12) Output Buffer (security)

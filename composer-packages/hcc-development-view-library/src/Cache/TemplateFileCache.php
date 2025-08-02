@@ -1,6 +1,6 @@
 <?php
 
-namespace HCC\View;
+namespace HCC\View\Cache;
 
 use HCC\View\Interfaces\TemplateCacheInterface;
 class TemplateFileCache implements TemplateCacheInterface

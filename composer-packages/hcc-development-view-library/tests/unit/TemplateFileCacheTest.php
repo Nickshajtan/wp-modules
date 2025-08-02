@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use HCC\View\TemplateFileCache;
+use HCC\View\Cache\TemplateFileCache;
 
 class TemplateFileCacheTest extends TestCase
 {

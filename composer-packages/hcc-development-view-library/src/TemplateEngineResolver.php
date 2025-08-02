@@ -9,6 +9,7 @@ use HCC\View\Engine\TwigEngine;
 use HCC\View\Interfaces\TemplateEngineInterface;
 use HCC\View\Interfaces\TemplateResolverInterface;
 use HCC\View\Interfaces\TemplateCacheInterface;
+use HCC\View\Cache\TwigCacheAdapter;
 
 /**
  * With TemplateEngineInterface classes this resolver implements Strategy pattern
@@ -33,7 +34,7 @@ class TemplateEngineResolver implements TemplateResolverInterface
 
             return $this->storage->remember(
                 'engine.twig',
-                fn() => new TwigEngine(basename($path), $this->cache)
+                fn() => new TwigEngine(dirname($path), new TwigCacheAdapter($this->cache))
             );
         }
 

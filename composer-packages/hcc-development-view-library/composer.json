@@ -25,6 +25,10 @@
     "phpunit/phpunit": "^11.5"
   },
   "scripts": {
-    "test": "lib/bin/phpunit --display-warnings --testsuite unit"
+    "test": "lib/bin/phpunit --display-warnings --testsuite unit",
+    "functional-test": [
+      "composer install --working-dir=tests/functional/_dependencies --no-interaction",
+      "node tests/run-functional-test.js"
+    ]
   }
 }

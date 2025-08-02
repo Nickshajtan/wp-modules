@@ -6,12 +6,13 @@ use HCC\View\Interfaces\TemplateCacheInterface;
 use HCC\View\Interfaces\TemplateEngineInterface;
 use \Twig\Environment;
 use \Twig\Loader\FilesystemLoader;
+use HCC\View\Cache\TwigCacheAdapter;
 
 class TwigEngine implements TemplateEngineInterface
 {
     protected Environment $twig;
 
-    public function __construct(string $path, ?TemplateCacheInterface $cache = null)
+    public function __construct(string $path, ?TwigCacheAdapter $cache = null)
     {
         $this->twig = new Environment(
             new FilesystemLoader($path),
