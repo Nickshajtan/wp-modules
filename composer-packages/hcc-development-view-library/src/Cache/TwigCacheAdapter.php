@@ -16,7 +16,7 @@ class TwigCacheAdapter implements CacheInterface
 
     public function generateKey(string $name, string $className): string
     {
-        return $this->cache->getCacheDirectory() . md5($name . $className) . '.php';
+        return md5($name . $className) . '.php';
     }
 
     public function write(string $key, string $content): void

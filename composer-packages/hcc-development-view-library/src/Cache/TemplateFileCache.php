@@ -19,7 +19,7 @@ class TemplateFileCache implements TemplateCacheInterface
 
     protected function createDir(string $dirname): void
     {
-        if (!is_dir($dirname)) {
+        if (!empty($dirname) && !is_dir($dirname)) {
             mkdir($dirname, 0777, true);
         }
     }
