@@ -1,6 +1,7 @@
 {
   "name": "hcc/event-system-library",
   "description": "Event system to combine WordPress actions with external events support",
+  "license": "MIT",
   "version": "1.0.0",
   "type": "library",
   "require": {
@@ -10,13 +11,16 @@
   },
   "autoload": {
     "psr-4": {
-      "HCC\\Events": "src/"
+      "HCC\\Events\\": "src/"
     }
   },
   "extra": {
     "installer-name": "hcc-event-system-library"
   },
   "config": {
-    "vendor-dir": "lib"
+    "vendor-dir": "lib",
+    "allow-plugins": {
+      "composer/installers": true
+    }
   }
 }

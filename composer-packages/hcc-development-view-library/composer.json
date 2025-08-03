@@ -1,6 +1,7 @@
 {
   "name": "hcc/development-view-library",
   "license": "MIT",
+  "version": "1.0.0",
   "description": "Package for MVC view presentation",
   "type": "library",
   "require": {
