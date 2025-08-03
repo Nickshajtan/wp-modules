@@ -24,6 +24,10 @@ class TemplateFileCacheTest extends TestCase
     {
         static::$cache->set('foo.tpl', 'hello');
         $this->assertSame('hello', static::$cache->get('foo.tpl'));
+
+        $context = ['test' => 'test'];
+        static::$cache->set('foo2.tpl', 'hello 2', $context);
+        $this->assertSame('hello 2', static::$cache->get('foo2.tpl', $context));
     }
 
     public function testGetReturnsNullIfNotExist(): void
@@ -43,16 +47,21 @@ class TemplateFileCacheTest extends TestCase
         static::$cache->set('delete.tpl', 'bye');
         static::$cache->delete('delete.tpl');
         $this->assertNull(static::$cache->get('delete.tpl'));
+
+        $context = ['test' => 'test'];
+        static::$cache->set('delete.tpl', 'bye', $context);
+        static::$cache->delete('delete.tpl', $context);
+        $this->assertNull(static::$cache->get('delete.tpl'));
     }
 
     public function testClearRemovesAll(): void
     {
-        static::$cache->set('a.tpl', 'a');
-        static::$cache->set('b.tpl', 'b');
+        static::$cache->set('test_a.tpl', 'a');
+        static::$cache->set('test_b.tpl', 'b');
         static::$cache->clear();
 
-        $this->assertNull(static::$cache->get('a.tpl'));
-        $this->assertNull(static::$cache->get('b.tpl'));
+        $this->assertNull(static::$cache->get('test_a.tpl'));
+        $this->assertNull(static::$cache->get('test_b.tpl'));
     }
 
     public function testPurgeExpiredRemovesOnlyExpired(): void
