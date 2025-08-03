@@ -22,7 +22,7 @@ class ObserverFactory
             throw new \InvalidArgumentException("The array does not contain valid dispatchers.");
         }
 
-        if (1 === count(array_unique($dispatchers, SORT_REGULAR))) {
+        if (1 === count(array_unique(array_map('spl_object_id', $dispatchers)))) {
             // Since there is only one class in the array we return SimpleObserver
             return new SimpleObserver($dispatchers[0]);
         }

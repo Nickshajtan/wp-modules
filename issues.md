@@ -8,7 +8,7 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 5) ORM and custom tables
 
 ## WordPress packages
-1) WP Node API (as CRUD wrapper)
+1) WP Node API (as CRUD wrapper) https://github.com/johnbillion/extended-cpts
 2) WP plugin boilerplate 
 3) CRON wrapper (+ true CRON) https://github.com/humanmade/Cavalcade
 4) Db wrapper. Different drawers (definitely Mongo, MySQL + Postgress / Maria, Microsoft SQL Server - TBD); vector DB for assets - TBD. Doctrine
@@ -69,4 +69,4 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 9) Slots https://github.com/humanmade/react-slot-fill?tab=readme-ov-file and https://developer.wordpress.org/block-editor/reference-guides/components/slot-fill/
 10) Own gRPC server and gateway?
 11) https://wordpress.stackexchange.com/questions/251116/how-to-use-wordpress-multisite-with-different-domain-names, https://florianbrinkmann.com/en/wordpress-multisite-mix-of-subdomains-and-subdirectories-3446/
-12) Output Buffer (security)
+12) Output Buffer (security) https://www.opensourceprojects.dev/post/1947505385260056911
