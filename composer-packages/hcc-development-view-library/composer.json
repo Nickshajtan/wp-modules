@@ -33,7 +33,8 @@
     "test": "lib/bin/phpunit --display-warnings --testsuite unit",
     "functional-test": [
       "composer install --working-dir=tests/functional/_dependencies --no-interaction",
-      "node tests/run-functional-test.js"
+      "node tests/run-functional-test.js",
+      "php tests/cleanup.php"
     ]
   }
 }
