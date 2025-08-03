@@ -6,6 +6,7 @@
         </testsuite>
         <testsuite name="functional">
             <file>tests/functional/TemplateEngineResolverTest.php</file>
+            <file>tests/functional/ViewPresenterTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -21,9 +21,9 @@ class PhpEngine implements TemplateEngineInterface
         }
 
         $basename = basename($path);
-        $cacheFile = $this->cache->get($basename);
-        if ($cacheFile) {
-            return $cacheFile;
+        $cachedOutput = $this->cache->get(filename: $basename, context: $data);
+        if (!empty($cachedOutput)) {
+            return $cachedOutput;
         }
 
         ob_start();
@@ -31,7 +31,7 @@ class PhpEngine implements TemplateEngineInterface
         include $path;
 
         $content = ob_get_clean();
-        $this->cache->set($basename, $content);
+        $this->cache->set(filename: $basename, content: $content, context: $data);
 
         return $content;
     }
