@@ -1,8 +1,10 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+namespace observers;
+
 use HCC\Events\Dispatcher\Interfaces\EventDispatcherInterface;
 use HCC\Events\Observer\SimpleObserver;
+use PHPUnit\Framework\TestCase;
 
 class SimpleObserverTest extends TestCase
 {

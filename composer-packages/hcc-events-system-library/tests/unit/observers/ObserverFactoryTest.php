@@ -1,10 +1,12 @@
 <?php
 
+namespace observers;
+
 use HCC\Events\Dispatcher\Interfaces\EventDispatcherInterface;
 use HCC\Events\Observer\BridgeObserver;
+use HCC\Events\Observer\ObserverFactory;
 use HCC\Events\Observer\SimpleObserver;
 use PHPUnit\Framework\TestCase;
-use HCC\Events\Observer\ObserverFactory;
 
 class ObserverFactoryTest extends TestCase
 {

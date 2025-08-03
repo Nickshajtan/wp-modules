@@ -1,8 +1,10 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+namespace observers;
+
 use HCC\Events\Bridge\Interfaces\ObserverBridgeInterface;
 use HCC\Events\Observer\BridgeObserver;
+use PHPUnit\Framework\TestCase;
 
 class BridgeObserverTest extends TestCase
 {
