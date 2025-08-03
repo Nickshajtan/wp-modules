@@ -54,8 +54,19 @@ class ViewPresenterTest extends TestCase
 
         $testString = 'Hello world from Twig template';
         $templatePath = __DIR__ . '/_fixtures/simple.twig';
-        $view = new View( basename($templatePath), ['test' => $testString] );
+        $view = new View( $templatePath, ['test' => $testString] );
         $view->setEngine(new TwigEngine(dirname($templatePath), new TwigCacheAdapter(new Cache($this->cacheDir))));
+        $this->assertSame("<p>$testString</p>", trim($view->render()));
+    }
+
+    public function testTwigPresenter(): void
+    {
+        $testString = 'Hello world from Twig presenter';
+        $presenter = new Presenter(
+            new Locator('twig-presenter', [__DIR__ . '/_fixtures/']),
+            new Resolver('twig-presenter', new Cache($this->cacheDir))
+        );
+        $view = $presenter->with('test', $testString)->view('simple.twig');
         $this->assertSame("<p>$testString</p>", trim($view->render()));
     }
 }

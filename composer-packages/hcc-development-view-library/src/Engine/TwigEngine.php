@@ -24,6 +24,6 @@ class TwigEngine implements TemplateEngineInterface
 
     public function render(string $path, array $data): string
     {
-        return $this->twig->render($path, $data);
+        return $this->twig->render(basename($path), $data);
     }
 }
