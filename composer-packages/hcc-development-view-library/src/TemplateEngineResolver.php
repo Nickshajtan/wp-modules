@@ -55,7 +55,7 @@ class TemplateEngineResolver implements TemplateResolverInterface
 
             return $this->storage->remember(
                 'engine.blade',
-                fn() => new BladeEngine(basename($path), $this->cache)
+                fn() => new BladeEngine(dirname($path), $this->cache)
             );
         }
 

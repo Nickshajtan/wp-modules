@@ -12,7 +12,7 @@ class PresenterTest extends TestCase
     public function testViewReturnsViewInstanceWithResolvedPathAndEngine(): void
     {
         $template = 'home';
-        $resolvedPath = '/templates/home.php';
+        $resolvedPath = DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'home.php';
         $defaultPath = '/fallback.php';
         $data = ['title' => 'Hello'];
 

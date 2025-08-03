@@ -15,10 +15,12 @@ use \Illuminate\View\Factory;
 class BladeEngine implements TemplateEngineInterface
 {
     protected Factory $viewFactory;
+    protected string $path;
 
     public function __construct(string $path, ?TemplateCacheInterface $cache = null)
     {
-        $cacheDir = $cache ? $cache->getCacheDirectory() : dirname($path);
+        $this->path = preg_replace('#[\\\\/]+#', DIRECTORY_SEPARATOR, $path);
+        $cacheDir = $cache ? $cache->getCacheDirectory() : $path . DIRECTORY_SEPARATOR . 'cache';
         $filesystem = new Filesystem();
         $compiler = new BladeCompiler($filesystem, $cacheDir);
         $resolver = new EngineResolver();
@@ -28,6 +30,13 @@ class BladeEngine implements TemplateEngineInterface
     }
     public function render(string $path, array $data = []): string
     {
+        $path = str_replace(['.blade.php', '.blade'], ['', ''], $path);
+        if ( str_starts_with($path, $this->path) ) {
+            $path = str_replace($this->path, '', $path);
+        }
+
+        $path = trim($path, DIRECTORY_SEPARATOR);
+
         return $this->viewFactory->make($path, $data)->render();
     }
 }

@@ -8,6 +8,7 @@ use HCC\View\TemplateLocator as Locator;
 use HCC\View\TemplateEngineResolver as Resolver;
 use HCC\View\Engine\PhpEngine;
 use HCC\View\Engine\TwigEngine;
+use HCC\View\Engine\BladeEngine;
 use PHPUnit\Framework\TestCase;
 
 class ViewPresenterTest extends TestCase
@@ -61,12 +62,66 @@ class ViewPresenterTest extends TestCase
 
     public function testTwigPresenter(): void
     {
+        if (!class_exists('Twig\Environment')) {
+            $this->markTestSkipped('Twig is not installed');
+        }
+
         $testString = 'Hello world from Twig presenter';
         $presenter = new Presenter(
             new Locator('twig-presenter', [__DIR__ . '/_fixtures/']),
             new Resolver('twig-presenter', new Cache($this->cacheDir))
         );
         $view = $presenter->with('test', $testString)->view('simple.twig');
+        $this->assertSame("<p>$testString</p>", trim($view->render()));
+    }
+
+    public function testBladeViewOutput(): void
+    {
+        $bladeClasses = [
+            '\Illuminate\View\Engines\EngineResolver',
+            '\Illuminate\Filesystem\Filesystem',
+            '\Illuminate\View\Compilers\BladeCompiler',
+            '\Illuminate\View\FileViewFinder',
+            '\Illuminate\View\Engines\CompilerEngine',
+            '\Illuminate\Events\Dispatcher',
+            '\Illuminate\View\Factory'
+        ];
+
+        $anyMissing = array_filter($bladeClasses, fn($class) => class_exists($class));
+        if (count($anyMissing) !== count($bladeClasses)) {
+            $this->markTestSkipped('Blade is not installed');
+        }
+
+        $testString = 'Hello world from Blade template';
+        $templatePath = __DIR__ . '/_fixtures/simple.blade.php';
+        $view = new View( basename($templatePath), ['test' => $testString] );
+        $view->setEngine(new BladeEngine(dirname($templatePath), new Cache($this->cacheDir)));
+        $this->assertSame("<p>$testString</p>", trim($view->render()));
+    }
+
+    public function testBladePresenter(): void
+    {
+        $bladeClasses = [
+            '\Illuminate\View\Engines\EngineResolver',
+            '\Illuminate\Filesystem\Filesystem',
+            '\Illuminate\View\Compilers\BladeCompiler',
+            '\Illuminate\View\FileViewFinder',
+            '\Illuminate\View\Engines\CompilerEngine',
+            '\Illuminate\Events\Dispatcher',
+            '\Illuminate\View\Factory'
+        ];
+
+        $anyMissing = array_filter($bladeClasses, fn($class) => class_exists($class));
+        if (count($anyMissing) !== count($bladeClasses)) {
+            $this->markTestSkipped('Blade is not installed');
+        }
+
+        $testString = 'Hello world from Blade presenter';
+        $presenter = new Presenter(
+            new Locator('blade-presenter', [__DIR__ . '/_fixtures/']),
+            new Resolver('blade-presenter', new Cache($this->cacheDir))
+        );
+        $view = $presenter->with('test', $testString)->view('simple.blade.php');
         $this->assertSame("<p>$testString</p>", trim($view->render()));
     }
 }

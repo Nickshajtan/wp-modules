@@ -12,7 +12,7 @@ class View
 
     public function __construct(string $path, array $data = [])
     {
-        $this->path = $path;
+        $this->path = preg_replace('#[\\\\/]+#', DIRECTORY_SEPARATOR, $path);
         $this->data = $data;
     }
 
