@@ -11,9 +11,9 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 1) WP Node API (as CRUD wrapper) https://github.com/johnbillion/extended-cpts
 2) WP plugin boilerplate 
 3) CRON wrapper (+ true CRON) https://github.com/humanmade/Cavalcade
-4) Db wrapper. Different drawers (definitely Mongo, MySQL + Postgress / Maria, Microsoft SQL Server - TBD); vector DB for assets - TBD. Doctrine
+4) Db wrapper. Different drawers (definitely Mongo, MySQL + Postgress / Maria, Microsoft SQL Server - TBD); vector DB for assets - TBD. Doctrine. Migrations
 5) CLI Wrapper. Symfony CLI + WP CLI. wp-cli-regex
-6) Open API + Guzzle + WP REST
+6) Open API + Guzzle + WP REST Rest caching
 7) Jobs https://github.com/humanmade/action-scheduler
 
 ## WordPress plugins (definitely)
@@ -39,11 +39,12 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 16) Network of network filesystem access, db access... TBD
 17) Domain mapping (for multisite)
 18) Different databases for Network
-19) Mongo for Gutenberg, Apollo for Gutenberg; Gutenberg boilerplate plugin. Elastic for search
+19) Mongo for Gutenberg, Apollo * React Query, rxjs  for Gutenberg; Gutenberg boilerplate plugin. Elastic for search. Import / Export
 20) Perks + Quick Edit perks, Formats, Featured, Advanced Search (by ID also)
 21) PublishPress (?) Autopublishment
 22) Media management plugin (3d-party video like Vistia, Youtube - TBD). Media cropping optimize (on the fly by cron and store in cloud)
 23) Admin pages speed optimization plugin (with Elastic?)
+24) https://docs.wpvip.com/vip-go-mu-plugins/
 
 ## Optimization packages (TBD)
 1) Webpp optimization + analogue for video

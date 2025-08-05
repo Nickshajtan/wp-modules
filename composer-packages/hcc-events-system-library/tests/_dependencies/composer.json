@@ -1,0 +1,8 @@
+{
+    "name": "hcc/events-system-library-tests",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "predis/predis": "^3.2"
+    }
+}
