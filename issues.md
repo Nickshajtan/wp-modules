@@ -56,6 +56,7 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 2) User system temporary access
 3) https://github.com/humanmade/Security-White-Paper
 4) http://github.com/humanmade/two-factor
+5) https://ru.wordpress.org/plugins/wp-health/
 
 ## Other
 1) ADA Tests ?
