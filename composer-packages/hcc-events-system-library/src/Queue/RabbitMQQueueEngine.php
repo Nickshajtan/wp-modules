@@ -4,19 +4,17 @@ namespace HCC\Events\Queue;
 
 use HCC\Events\Queue\Interfaces\QueueEngineInterface;
 use HCC\Events\Interfaces\JobInterface;
-use \PhpAmqpLib\Connection\AMQPStreamConnection;
 use \PhpAmqpLib\Message\AMQPMessage;
+use \PhpAmqpLib\Channel\AMQPChannel;
 class RabbitMQQueueEngine implements QueueEngineInterface
 {
-    private AMQPStreamConnection $connection;
-    private \AMQPChannel $channel;
+    private AMQPChannel $channel;
 
     protected const KEY = 'event_queue';
 
-    public function __construct(AMQPStreamConnection $connection)
+    public function __construct(AMQPChannel $channel)
     {
-        $this->connection = $connection;
-        $this->channel = $this->connection->channel();
+        $this->channel = $channel;
     }
 
     public function push(JobInterface $job): void
@@ -25,16 +23,18 @@ class RabbitMQQueueEngine implements QueueEngineInterface
         $this->channel->basic_publish($msg, '', static::KEY);
     }
 
-    public function process(): void
+    public function process(int $maxIterations = 100): void
     {
         $callback = function (AMQPMessage $msg) {
             $job = unserialize($msg->getBody());
-            $job->handle();
+            if ($job instanceof JobInterface) {
+                $job->handle();
+            }
         };
 
         $this->channel->basic_consume(static::KEY, '', false, true, false, false, $callback);
-
-        while ($this->channel->is_consuming()) {
+        $iterations = 0;
+        while ( count($this->channel->callbacks) > 0 && $iterations++ < $maxIterations ) {
             $this->channel->wait();
         }
     }
