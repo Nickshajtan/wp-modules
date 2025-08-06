@@ -16,4 +16,4 @@ function deleteRecursive(string $path): void {
     }
 }
 
-deleteRecursive(__DIR__ . '/functional/_dependencies/vendor');
+deleteRecursive(__DIR__ . '/_dependencies/vendor');

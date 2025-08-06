@@ -27,6 +27,10 @@
     }
   },
   "scripts": {
-    "test": "lib/bin/phpunit --display-warnings --testsuite unit"
+    "test": [
+      "composer install --working-dir=tests/_dependencies --no-interaction",
+      "lib/bin/phpunit --display-warnings --testsuite unit",
+      "php tests/cleanup.php"
+    ]
   }
 }
