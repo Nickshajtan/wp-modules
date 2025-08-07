@@ -11,7 +11,7 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 1) WP Node API (as CRUD wrapper) https://github.com/johnbillion/extended-cpts
 2) WP plugin boilerplate 
 3) CRON wrapper (+ true CRON) https://github.com/humanmade/Cavalcade
-4) Db wrapper. Different drawers (definitely Mongo, MySQL + Postgress / Maria, Microsoft SQL Server - TBD); vector DB for assets - TBD. Doctrine. Migrations
+4) Db wrapper. Different drawers (definitely Mongo, MySQL + Postgress / Maria, Microsoft SQL Server - TBD); vector DB for assets - TBD. Doctrine. Migrations. Hyper DB (master/slave)?
 5) CLI Wrapper. Symfony CLI + WP CLI. wp-cli-regex
 6) Open API + Guzzle + WP REST Rest caching
 7) Jobs https://github.com/humanmade/action-scheduler

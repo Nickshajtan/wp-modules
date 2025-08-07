@@ -4,6 +4,8 @@
     "license": "MIT",
     "require-dev": {
         "predis/predis": "^3.2",
-        "php-amqplib/php-amqplib": "^2.8"
+        "php-amqplib/php-amqplib": "^2.8",
+        "react/event-loop": "^1.5",
+        "reactivex/rxphp": "^2.0"
     }
 }

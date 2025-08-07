@@ -4,10 +4,14 @@ namespace HCC\Events\Engine;
 
 use HCC\Events\Engine\Interfaces\AsyncEngineInterface;
 use \Rx\Observable;
-use \Rx\Scheduler\NewThreadScheduler;
+use Rx\SchedulerInterface;
 
-class PxPHPEngine implements AsyncEngineInterface
+/**
+ * @see https://github.com/ReactiveX/RxPHP
+ */
+class RxPHPEngine implements AsyncEngineInterface
 {
+    public function __construct(private readonly SchedulerInterface $scheduler) {}
     public function dispatchAsync(object $event, array $args = []): void
     {
         Observable::create(function ($observer) use ($event, $args) {
@@ -16,6 +20,6 @@ class PxPHPEngine implements AsyncEngineInterface
             }
 
             $observer->onCompleted();
-        })->subscribeOn(NewThreadScheduler::instance());
+        })->subscribeOn($this->scheduler)->subscribe();
     }
 }
