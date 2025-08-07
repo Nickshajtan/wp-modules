@@ -1,11 +1,14 @@
 gitattributes, protected branches, validation, phpstan, linters. Protected files?
 
 ## General Packages
+0) Before / After
 1) Symfony Router Adapter + #[Route] attribute
 2) Symfony Validator Adapter + #[Validate] attribute
 3) Config loader
 4) Open API + GUZZLE?
 5) ORM and custom tables
+6) AOP?
+7) WP Logger (CLI + Memory + File + DB)?
 
 ## WordPress packages
 1) WP Node API (as CRUD wrapper) https://github.com/johnbillion/extended-cpts

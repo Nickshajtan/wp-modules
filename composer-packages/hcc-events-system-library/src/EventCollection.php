@@ -86,7 +86,7 @@ class EventCollection implements CollectionInterface
 
     public function deregisterEvent(string $eventName, string $id = '', ?int $priority = null): void
     {
-        if (!$this->removeEvent(eventName: $eventName, id: $id, priority: $priority) &&
+        if (!$this->removeEvent(eventName: $eventName, id: $id, priority: $priority ?? self::DEFAULT_PRIORITY) &&
             isset($this->handlers->remove) && is_callable($this->handlers->remove)
         ) {
             $this->callEvent($this->handlers->remove, [$eventName, $priority]);
