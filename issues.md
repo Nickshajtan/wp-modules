@@ -1,4 +1,4 @@
-gitattributes, protected branches, validation, phpstan, linters. Protected files?
+gitattributes, protected branches, validation, phpstan, linters. lint-staged. Protected files?
 
 ## General Packages
 0) Before / After
@@ -17,7 +17,6 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 4) Db wrapper. Different drawers (definitely Mongo, MySQL + Postgress / Maria, Microsoft SQL Server - TBD); vector DB for assets - TBD. Doctrine. Migrations. Hyper DB (master/slave)?
 5) CLI Wrapper. Symfony CLI + WP CLI. wp-cli-regex
 6) Open API + Guzzle + WP REST Rest caching
-7) Jobs https://github.com/humanmade/action-scheduler
 
 ## WordPress plugins (definitely)
 1) Core plugin
@@ -48,6 +47,7 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 22) Media management plugin (3d-party video like Vistia, Youtube - TBD). Media cropping optimize (on the fly by cron and store in cloud)
 23) Admin pages speed optimization plugin (with Elastic?)
 24) https://docs.wpvip.com/vip-go-mu-plugins/
+25) MU Filter by active themes and plugins
 
 ## Optimization packages (TBD)
 1) Webpp optimization + analogue for video
@@ -61,6 +61,7 @@ gitattributes, protected branches, validation, phpstan, linters. Protected files
 3) https://github.com/humanmade/Security-White-Paper
 4) http://github.com/humanmade/two-factor
 5) https://ru.wordpress.org/plugins/wp-health/
+6) Web minifest
 
 ## Other
 1) ADA Tests ?

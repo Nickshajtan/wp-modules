@@ -131,7 +131,7 @@ class EventCollection implements CollectionInterface
         }
 
         if (count($filteredEvents) > 1) {
-            usort($filteredEvents, fn($a, $b) => ($a->priority ?? 0) <=> ($b->priority ?? 0));
+            usort($filteredEvents, fn($a, $b) => [$a->priority, $a->id] <=> [$b->priority, $b->id]);
         }
 
         return array_values($filteredEvents);
@@ -195,7 +195,7 @@ class EventCollection implements CollectionInterface
         return hash('sha256', $id);
     }
 
-    protected function handleException(string $message)
+    protected function handleException(string $message): never
     {
         throw new \RuntimeException($message);
     }

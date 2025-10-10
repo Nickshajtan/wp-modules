@@ -24,7 +24,7 @@ class RxPHPEngineTest extends TestCase
             return $disposable;
         });
         $engine = new RxPHPEngine($scheduler);
-        $engine->dispatchAsync($event, ['arg1', 'arg2']);
+        $engine->dispatch($event, ['arg1', 'arg2']);
         $this->assertTrue($callbackCalled);
     }
 }

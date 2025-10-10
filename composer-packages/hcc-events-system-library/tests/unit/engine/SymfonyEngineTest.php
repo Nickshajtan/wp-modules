@@ -16,6 +16,6 @@ class SymfonyEngineTest extends TestCase
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher->expects($this->once())->method('dispatch')->with($event);
         $engine = new SymfonyEngine($dispatcher);
-        $engine->dispatchSync($event);
+        $engine->dispatch($event);
     }
 }

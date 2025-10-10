@@ -87,7 +87,7 @@ class TemplateFileCache implements TemplateCacheInterface
         }
 
         if (time() - filemtime($filePath) > $this->ttl) {
-            $this->delete($filename);
+            $this->delete($filename, $context);
             return null;
         }
 

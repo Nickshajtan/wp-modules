@@ -2,7 +2,6 @@
 
 namespace HCC\View\Engine;
 
-use HCC\View\Interfaces\TemplateCacheInterface;
 use HCC\View\Interfaces\TemplateEngineInterface;
 use \Twig\Environment;
 use \Twig\Loader\FilesystemLoader;

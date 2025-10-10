@@ -2,14 +2,14 @@
 
 namespace HCC\Events\Engine;
 
-use HCC\Events\Engine\Interfaces\AsyncEngineInterface;
+use HCC\Events\Engine\Interfaces\EngineInterface;
 use \React\EventLoop\LoopInterface;
 
-class ReactPHPEngine implements AsyncEngineInterface
+class ReactPHPEngine implements EngineInterface
 {
     public function __construct(private readonly LoopInterface $loop) {}
 
-    public function dispatchAsync(object $event, array $args = []): void
+    public function dispatch(object $event, array $args = []): void
     {
         $this->loop->futureTick(function () use ($event, $args) {
             if (method_exists($event, 'dispatch')) {

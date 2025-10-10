@@ -27,7 +27,7 @@ class ReactPHPEngineTest extends TestCase
             }));
 
         $engine = new ReactPHPEngine($loop);
-        $engine->dispatchAsync($event, ['arg1', 'arg2']);
+        $engine->dispatch($event, ['arg1', 'arg2']);
 
         $this->assertTrue($callbackCalled);
     }
