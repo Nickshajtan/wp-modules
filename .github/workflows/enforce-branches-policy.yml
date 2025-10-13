@@ -1,0 +1,19 @@
+name: Enforce Branch Protection
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.repo-config/branch-policy.yml']
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npm run enforce
+        env:
+          GH_TOKEN: ${{ secrets.GH_ADMIN_PAT }}
+          GH_API: https://api.github.com

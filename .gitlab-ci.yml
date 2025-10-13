@@ -17,11 +17,23 @@ validate_commit:
     - echo "Validating commit messages..."
     - commits=$(git log --oneline --no-merges)
     - while IFS= read -r commit; do
-        commit_msg=$(echo "$commit" | cut -d' ' -f2-);
-        echo $commit_msg;
-        bash ./scripts/.git-scripts/validate-commit.sh "$commit_msg";
+      commit_msg=$(echo "$commit" | cut -d' ' -f2-);
+      echo $commit_msg;
+      bash ./scripts/.git-scripts/validate-commit.sh "$commit_msg";
       done <<< "$commits"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "staging" || $CI_COMMIT_BRANCH == "production" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "prelaunch"'
       when: never
     - when: always
+
+enforce:branch-protection:
+  image: node:20
+  rules:
+    - changes:
+        - .repo-config/branch-policy.yml
+  script:
+    - npm ci
+    - npm run enforce
+  variables:
+    GL_TOKEN: $GL_TOKEN
+    GL_API: 'https://gitlab.com/api/v4'
