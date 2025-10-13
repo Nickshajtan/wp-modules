@@ -1,0 +1,16 @@
+github:
+  repos:
+    - name: org/repo
+      branches:
+        - pattern: main
+          enforce_admins: true
+          pr_reviews: { required_approving_review_count: 1 }
+          status_checks: { strict: true, contexts: [] } # Context for CI checks before merging
+#gitlab:
+#projects:
+#- id: 123
+#branches:
+#- pattern: main
+#push: maintainers
+#merge: maintainers
+#allow_force_push: false
