@@ -15,7 +15,7 @@ const DRY_RUN = (process.env.DRY_RUN || 'false').toLowerCase() === 'true';
 const readPolicyFile = policyPath => {
   return yaml.load(fs.readFileSync(policyPath, 'utf8')) || {};
 };
-const enforceGitHub = async (config, { token, api, http }) => {
+export const enforceGitHub = async (config, { token, api, http }) => {
   if (!token || !config) {
     return;
   }
@@ -51,7 +51,7 @@ const enforceGitHub = async (config, { token, api, http }) => {
     }
   }
 };
-const enforceGitLab = async (config, { token, api, http }) => {
+export const enforceGitLab = async (config, { token, api, http }) => {
   if (!token || !config) {
     return;
   }
