@@ -13,6 +13,13 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      globals: {
+        console: true,
+        process: true,
+        __dirname: true,
+        module: true,
+        require: true,
+      },
     },
     plugins: {
       import: importPlugin,
