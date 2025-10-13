@@ -5,6 +5,7 @@ import process from 'node:process';
 import axios from 'axios';
 import yaml from 'js-yaml';
 import kleur from 'kleur';
+import { PolicySchema } from './branch-schema.mjs';
 
 const GH_API = process.env.GH_API ?? 'https://api.github.com';
 const GL_API = process.env.GL_API ?? 'https://gitlab.com/api/v4';
@@ -13,7 +14,14 @@ const GL_TOKEN = process.env.GL_TOKEN;
 const DRY_RUN = (process.env.DRY_RUN || 'false').toLowerCase() === 'true';
 
 const readPolicyFile = policyPath => {
-  return yaml.load(fs.readFileSync(policyPath, 'utf8')) || {};
+  const policy = yaml.load(fs.readFileSync(policyPath, 'utf8')) || {};
+  const parsed = PolicySchema.safeParse(policy);
+  if (!parsed.success) {
+    console.error(kleur.red(`Invalid policy.yml ${parsed.error.message}`));
+    process.exit(2);
+  }
+
+  return parsed.data;
 };
 export const enforceGitHub = async (config, { token, api, http }) => {
   if (!token || !config) {
